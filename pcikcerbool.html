@@ -1,0 +1,4051 @@
+<!DOCTYPE html>
+<html lang="vi" prefix="og: https://ogp.me/ns#" class="loading-site no-js">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      if (
+        navigator.userAgent.match(/MSIE|Internet Explorer/i) ||
+        navigator.userAgent.match(/Trident\/7\..*?rv:11/i)
+      ) {
+        var href = document.location.href;
+        if (!href.match(/[?&]nowprocket/)) {
+          if (href.indexOf("?") == -1) {
+            if (href.indexOf("#") == -1) {
+              document.location.href = href + "?nowprocket=1";
+            } else {
+              document.location.href = href.replace("#", "?nowprocket=1#");
+            }
+          } else {
+            if (href.indexOf("#") == -1) {
+              document.location.href = href + "&nowprocket=1";
+            } else {
+              document.location.href = href.replace("#", "&nowprocket=1#");
+            }
+          }
+        }
+      }
+    </script>
+    <script>
+      class RocketLazyLoadScripts {
+        constructor() {
+          (this.v = "1.2.5.1"),
+            (this.triggerEvents = [
+              "keydown",
+              "mousedown",
+              "mousemove",
+              "touchmove",
+              "touchstart",
+              "touchend",
+              "wheel",
+            ]),
+            (this.userEventHandler = this._triggerListener.bind(this)),
+            (this.touchStartHandler = this._onTouchStart.bind(this)),
+            (this.touchMoveHandler = this._onTouchMove.bind(this)),
+            (this.touchEndHandler = this._onTouchEnd.bind(this)),
+            (this.clickHandler = this._onClick.bind(this)),
+            (this.interceptedClicks = []),
+            (this.interceptedClickListeners = []),
+            this._interceptClickListeners(this),
+            window.addEventListener("pageshow", (e) => {
+              (this.persisted = e.persisted),
+                this.everythingLoaded && this._triggerLastFunctions();
+            }),
+            document.addEventListener("DOMContentLoaded", () => {
+              this._preconnect3rdParties();
+            }),
+            (this.delayedScripts = { normal: [], async: [], defer: [] }),
+            (this.trash = []),
+            (this.allJQueries = []);
+        }
+        _addUserInteractionListener(e) {
+          if (document.hidden) {
+            e._triggerListener();
+            return;
+          }
+          this.triggerEvents.forEach((t) =>
+            window.addEventListener(t, e.userEventHandler, { passive: !0 })
+          ),
+            window.addEventListener("touchstart", e.touchStartHandler, {
+              passive: !0,
+            }),
+            window.addEventListener("mousedown", e.touchStartHandler),
+            document.addEventListener("visibilitychange", e.userEventHandler);
+        }
+        _removeUserInteractionListener() {
+          this.triggerEvents.forEach((e) =>
+            window.removeEventListener(e, this.userEventHandler, {
+              passive: !0,
+            })
+          ),
+            document.removeEventListener(
+              "visibilitychange",
+              this.userEventHandler
+            );
+        }
+        _onTouchStart(e) {
+          "HTML" !== e.target.tagName &&
+            (window.addEventListener("touchend", this.touchEndHandler),
+            window.addEventListener("mouseup", this.touchEndHandler),
+            window.addEventListener("touchmove", this.touchMoveHandler, {
+              passive: !0,
+            }),
+            window.addEventListener("mousemove", this.touchMoveHandler),
+            e.target.addEventListener("click", this.clickHandler),
+            this._disableOtherEventListeners(e.target, !0),
+            this._renameDOMAttribute(e.target, "onclick", "rocket-onclick"),
+            this._pendingClickStarted());
+        }
+        _onTouchMove(e) {
+          window.removeEventListener("touchend", this.touchEndHandler),
+            window.removeEventListener("mouseup", this.touchEndHandler),
+            window.removeEventListener("touchmove", this.touchMoveHandler, {
+              passive: !0,
+            }),
+            window.removeEventListener("mousemove", this.touchMoveHandler),
+            e.target.removeEventListener("click", this.clickHandler),
+            this._disableOtherEventListeners(e.target, !1),
+            this._renameDOMAttribute(e.target, "rocket-onclick", "onclick"),
+            this._pendingClickFinished();
+        }
+        _onTouchEnd() {
+          window.removeEventListener("touchend", this.touchEndHandler),
+            window.removeEventListener("mouseup", this.touchEndHandler),
+            window.removeEventListener("touchmove", this.touchMoveHandler, {
+              passive: !0,
+            }),
+            window.removeEventListener("mousemove", this.touchMoveHandler);
+        }
+        _onClick(e) {
+          e.target.removeEventListener("click", this.clickHandler),
+            this._disableOtherEventListeners(e.target, !1),
+            this._renameDOMAttribute(e.target, "rocket-onclick", "onclick"),
+            this.interceptedClicks.push(e),
+            e.preventDefault(),
+            e.stopPropagation(),
+            e.stopImmediatePropagation(),
+            this._pendingClickFinished();
+        }
+        _replayClicks() {
+          window.removeEventListener("touchstart", this.touchStartHandler, {
+            passive: !0,
+          }),
+            window.removeEventListener("mousedown", this.touchStartHandler),
+            this.interceptedClicks.forEach((e) => {
+              e.target.dispatchEvent(
+                new MouseEvent("click", {
+                  view: e.view,
+                  bubbles: !0,
+                  cancelable: !0,
+                })
+              );
+            });
+        }
+        _interceptClickListeners(e) {
+          (EventTarget.prototype.addEventListenerBase =
+            EventTarget.prototype.addEventListener),
+            (EventTarget.prototype.addEventListener = function (t, i, r) {
+              "click" !== t ||
+                e.windowLoaded ||
+                i === e.clickHandler ||
+                e.interceptedClickListeners.push({
+                  target: this,
+                  func: i,
+                  options: r,
+                }),
+                (this || window).addEventListenerBase(t, i, r);
+            });
+        }
+        _disableOtherEventListeners(e, t) {
+          this.interceptedClickListeners.forEach((i) => {
+            i.target === e &&
+              (t
+                ? e.removeEventListener("click", i.func, i.options)
+                : e.addEventListener("click", i.func, i.options));
+          }),
+            e.parentNode !== document.documentElement &&
+              this._disableOtherEventListeners(e.parentNode, t);
+        }
+        _waitForPendingClicks() {
+          return new Promise((e) => {
+            this._isClickPending ? (this._pendingClickFinished = e) : e();
+          });
+        }
+        _pendingClickStarted() {
+          this._isClickPending = !0;
+        }
+        _pendingClickFinished() {
+          this._isClickPending = !1;
+        }
+        _renameDOMAttribute(e, t, i) {
+          e.hasAttribute &&
+            e.hasAttribute(t) &&
+            (event.target.setAttribute(i, event.target.getAttribute(t)),
+            event.target.removeAttribute(t));
+        }
+        _triggerListener() {
+          this._removeUserInteractionListener(this),
+            "loading" === document.readyState
+              ? document.addEventListener(
+                  "DOMContentLoaded",
+                  this._loadEverythingNow.bind(this)
+                )
+              : this._loadEverythingNow();
+        }
+        _preconnect3rdParties() {
+          let e = [];
+          document
+            .querySelectorAll(
+              "script[type=rocketlazyloadscript][data-rocket-src]"
+            )
+            .forEach((t) => {
+              let i = t.getAttribute("data-rocket-src");
+              if (i && 0 !== i.indexOf("data:")) {
+                0 === i.indexOf("//") && (i = location.protocol + i);
+                try {
+                  let r = new URL(i).origin;
+                  r !== location.origin &&
+                    e.push({
+                      src: r,
+                      crossOrigin:
+                        t.crossOrigin ||
+                        "module" === t.getAttribute("data-rocket-type"),
+                    });
+                } catch (n) {}
+              }
+            }),
+            (e = [...new Map(e.map((e) => [JSON.stringify(e), e])).values()]),
+            this._batchInjectResourceHints(e, "preconnect");
+        }
+        async _loadEverythingNow() {
+          (this.lastBreath = Date.now()),
+            this._delayEventListeners(this),
+            this._delayJQueryReady(this),
+            this._handleDocumentWrite(),
+            this._registerAllDelayedScripts(),
+            this._preloadAllScripts(),
+            await this._loadScriptsFromList(this.delayedScripts.normal),
+            await this._loadScriptsFromList(this.delayedScripts.defer),
+            await this._loadScriptsFromList(this.delayedScripts.async);
+          try {
+            await this._triggerDOMContentLoaded(),
+              await this._pendingWebpackRequests(this),
+              await this._triggerWindowLoad();
+          } catch (e) {
+            console.error(e);
+          }
+          window.dispatchEvent(new Event("rocket-allScriptsLoaded")),
+            (this.everythingLoaded = !0),
+            this._waitForPendingClicks().then(() => {
+              this._replayClicks();
+            }),
+            this._emptyTrash();
+        }
+        _registerAllDelayedScripts() {
+          document
+            .querySelectorAll("script[type=rocketlazyloadscript]")
+            .forEach((e) => {
+              e.hasAttribute("data-rocket-src")
+                ? e.hasAttribute("async") && !1 !== e.async
+                  ? this.delayedScripts.async.push(e)
+                  : (e.hasAttribute("defer") && !1 !== e.defer) ||
+                    "module" === e.getAttribute("data-rocket-type")
+                  ? this.delayedScripts.defer.push(e)
+                  : this.delayedScripts.normal.push(e)
+                : this.delayedScripts.normal.push(e);
+            });
+        }
+        async _transformScript(e) {
+          if (
+            (await this._littleBreath(),
+            !0 === e.noModule && "noModule" in HTMLScriptElement.prototype)
+          ) {
+            e.setAttribute("data-rocket-status", "skipped");
+            return;
+          }
+          return new Promise((t) => {
+            let i;
+            function r() {
+              (i || e).setAttribute("data-rocket-status", "executed"), t();
+            }
+            try {
+              if (
+                navigator.userAgent.indexOf("Firefox/") > 0 ||
+                "" === navigator.vendor
+              )
+                (i = document.createElement("script")),
+                  [...e.attributes].forEach((e) => {
+                    let t = e.nodeName;
+                    "type" !== t &&
+                      ("data-rocket-type" === t && (t = "type"),
+                      "data-rocket-src" === t && (t = "src"),
+                      i.setAttribute(t, e.nodeValue));
+                  }),
+                  e.text && (i.text = e.text),
+                  i.hasAttribute("src")
+                    ? (i.addEventListener("load", r),
+                      i.addEventListener("error", function () {
+                        i.setAttribute("data-rocket-status", "failed"), t();
+                      }),
+                      setTimeout(() => {
+                        i.isConnected || t();
+                      }, 1))
+                    : ((i.text = e.text), r()),
+                  e.parentNode.replaceChild(i, e);
+              else {
+                let n = e.getAttribute("data-rocket-type"),
+                  s = e.getAttribute("data-rocket-src");
+                n
+                  ? ((e.type = n), e.removeAttribute("data-rocket-type"))
+                  : e.removeAttribute("type"),
+                  e.addEventListener("load", r),
+                  e.addEventListener("error", function () {
+                    e.setAttribute("data-rocket-status", "failed"), t();
+                  }),
+                  s
+                    ? (e.removeAttribute("data-rocket-src"), (e.src = s))
+                    : (e.src =
+                        "data:text/javascript;base64," +
+                        window.btoa(unescape(encodeURIComponent(e.text))));
+              }
+            } catch (a) {
+              e.setAttribute("data-rocket-status", "failed"), t();
+            }
+          });
+        }
+        async _loadScriptsFromList(e) {
+          let t = e.shift();
+          return t && t.isConnected
+            ? (await this._transformScript(t), this._loadScriptsFromList(e))
+            : Promise.resolve();
+        }
+        _preloadAllScripts() {
+          this._batchInjectResourceHints(
+            [
+              ...this.delayedScripts.normal,
+              ...this.delayedScripts.defer,
+              ...this.delayedScripts.async,
+            ],
+            "preload"
+          );
+        }
+        _batchInjectResourceHints(e, t) {
+          var i = document.createDocumentFragment();
+          e.forEach((e) => {
+            let r =
+              (e.getAttribute && e.getAttribute("data-rocket-src")) || e.src;
+            if (r) {
+              let n = document.createElement("link");
+              (n.href = r),
+                (n.rel = t),
+                "preconnect" !== t && (n.as = "script"),
+                e.getAttribute &&
+                  "module" === e.getAttribute("data-rocket-type") &&
+                  (n.crossOrigin = !0),
+                e.crossOrigin && (n.crossOrigin = e.crossOrigin),
+                e.integrity && (n.integrity = e.integrity),
+                i.appendChild(n),
+                this.trash.push(n);
+            }
+          }),
+            document.head.appendChild(i);
+        }
+        _delayEventListeners(e) {
+          let t = {};
+          function i(i, r) {
+            return t[r].eventsToRewrite.indexOf(i) >= 0 && !e.everythingLoaded
+              ? "rocket-" + i
+              : i;
+          }
+          function r(e, r) {
+            var n;
+            !t[(n = e)] &&
+              ((t[n] = {
+                originalFunctions: {
+                  add: n.addEventListener,
+                  remove: n.removeEventListener,
+                },
+                eventsToRewrite: [],
+              }),
+              (n.addEventListener = function () {
+                (arguments[0] = i(arguments[0], n)),
+                  t[n].originalFunctions.add.apply(n, arguments);
+              }),
+              (n.removeEventListener = function () {
+                (arguments[0] = i(arguments[0], n)),
+                  t[n].originalFunctions.remove.apply(n, arguments);
+              })),
+              t[e].eventsToRewrite.push(r);
+          }
+          function n(t, i) {
+            let r = t[i];
+            (t[i] = null),
+              Object.defineProperty(t, i, {
+                get: () => r || function () {},
+                set(n) {
+                  e.everythingLoaded ? (r = n) : (t["rocket" + i] = r = n);
+                },
+              });
+          }
+          r(document, "DOMContentLoaded"),
+            r(window, "DOMContentLoaded"),
+            r(window, "load"),
+            r(window, "pageshow"),
+            r(document, "readystatechange"),
+            n(document, "onreadystatechange"),
+            n(window, "onload"),
+            n(window, "onpageshow");
+        }
+        _delayJQueryReady(e) {
+          let t;
+          function i(t) {
+            return e.everythingLoaded
+              ? t
+              : t
+                  .split(" ")
+                  .map((e) =>
+                    "load" === e || 0 === e.indexOf("load.")
+                      ? "rocket-jquery-load"
+                      : e
+                  )
+                  .join(" ");
+          }
+          function r(r) {
+            if (r && r.fn && !e.allJQueries.includes(r)) {
+              r.fn.ready = r.fn.init.prototype.ready = function (t) {
+                return (
+                  e.domReadyFired
+                    ? t.bind(document)(r)
+                    : document.addEventListener("rocket-DOMContentLoaded", () =>
+                        t.bind(document)(r)
+                      ),
+                  r([])
+                );
+              };
+              let n = r.fn.on;
+              (r.fn.on = r.fn.init.prototype.on =
+                function () {
+                  return (
+                    this[0] === window &&
+                      ("string" == typeof arguments[0] ||
+                      arguments[0] instanceof String
+                        ? (arguments[0] = i(arguments[0]))
+                        : "object" == typeof arguments[0] &&
+                          Object.keys(arguments[0]).forEach((e) => {
+                            let t = arguments[0][e];
+                            delete arguments[0][e], (arguments[0][i(e)] = t);
+                          })),
+                    n.apply(this, arguments),
+                    this
+                  );
+                }),
+                e.allJQueries.push(r);
+            }
+            t = r;
+          }
+          r(window.jQuery),
+            Object.defineProperty(window, "jQuery", {
+              get: () => t,
+              set(e) {
+                r(e);
+              },
+            });
+        }
+        async _pendingWebpackRequests(e) {
+          let t = document.querySelector("script[data-webpack]");
+          async function i() {
+            return new Promise((e) => {
+              t.addEventListener("load", e), t.addEventListener("error", e);
+            });
+          }
+          t &&
+            (await i(),
+            await e._requestAnimFrame(),
+            await e._pendingWebpackRequests(e));
+        }
+        async _triggerDOMContentLoaded() {
+          (this.domReadyFired = !0),
+            await this._littleBreath(),
+            document.dispatchEvent(new Event("rocket-readystatechange")),
+            await this._littleBreath(),
+            document.rocketonreadystatechange &&
+              document.rocketonreadystatechange(),
+            await this._littleBreath(),
+            document.dispatchEvent(new Event("rocket-DOMContentLoaded")),
+            await this._littleBreath(),
+            window.dispatchEvent(new Event("rocket-DOMContentLoaded"));
+        }
+        async _triggerWindowLoad() {
+          await this._littleBreath(),
+            document.dispatchEvent(new Event("rocket-readystatechange")),
+            await this._littleBreath(),
+            document.rocketonreadystatechange &&
+              document.rocketonreadystatechange(),
+            await this._littleBreath(),
+            window.dispatchEvent(new Event("rocket-load")),
+            await this._littleBreath(),
+            window.rocketonload && window.rocketonload(),
+            await this._littleBreath(),
+            this.allJQueries.forEach((e) =>
+              e(window).trigger("rocket-jquery-load")
+            ),
+            await this._littleBreath();
+          let e = new Event("rocket-pageshow");
+          (e.persisted = this.persisted),
+            window.dispatchEvent(e),
+            await this._littleBreath(),
+            window.rocketonpageshow &&
+              window.rocketonpageshow({ persisted: this.persisted }),
+            (this.windowLoaded = !0);
+        }
+        _triggerLastFunctions() {
+          document.onreadystatechange && document.onreadystatechange(),
+            window.onload && window.onload(),
+            window.onpageshow &&
+              window.onpageshow({ persisted: this.persisted });
+        }
+        _handleDocumentWrite() {
+          let e = new Map();
+          document.write = document.writeln = function (t) {
+            let i = document.currentScript;
+            i || console.error("WPRocket unable to document.write this: " + t);
+            let r = document.createRange(),
+              n = i.parentElement,
+              s = e.get(i);
+            void 0 === s && ((s = i.nextSibling), e.set(i, s));
+            let a = document.createDocumentFragment();
+            r.setStart(a, 0),
+              a.appendChild(r.createContextualFragment(t)),
+              n.insertBefore(a, s);
+          };
+        }
+        async _littleBreath() {
+          Date.now() - this.lastBreath > 45 &&
+            (await this._requestAnimFrame(), (this.lastBreath = Date.now()));
+        }
+        async _requestAnimFrame() {
+          return document.hidden
+            ? new Promise((e) => setTimeout(e))
+            : new Promise((e) => requestAnimationFrame(e));
+        }
+        _emptyTrash() {
+          this.trash.forEach((e) => e.remove());
+        }
+        static run() {
+          let e = new RocketLazyLoadScripts();
+          e._addUserInteractionListener(e);
+        }
+      }
+      RocketLazyLoadScripts.run();
+    </script>
+    <link rel="profile" href="http://gmpg.org/xfn/11" />
+    <link rel="pingback" href="https://hanoisports.com/xmlrpc.php" />
+    <script type="rocketlazyloadscript">
+      (function(html){html.className = html.className.replace(/\bno-js\b/,'js')})(document.documentElement);
+    </script>
+    <style>
+      img:is([sizes="auto" i], [sizes^="auto," i]) {
+        contain-intrinsic-size: 3000px 1500px;
+      }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Tối ưu hóa công cụ tìm kiếm bởi Rank Math PRO - https://rankmath.com/ -->
+    <title>Tự Do Phối Màu Sân Pickleball Với Bảng Màu Có Sẵn</title>
+    <meta
+      name="description"
+      content='"Công cụ phối màu sân Pickleball tiện lợi – Tự do lựa chọn bảng màu chuẩn, tạo nên sân chơi độc đáo và chuyên nghiệp. Truy cập ngay để trải nghiệm miễn phí!"' />
+    <meta
+      name="robots"
+      content="follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large" />
+    <link
+      rel="canonical"
+      href="https://hanoisports.com/phoi-mau-san-pickleball/" />
+    <meta property="og:locale" content="vi_VN" />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:title"
+      content="Tự Do Phối Màu Sân Pickleball Với Bảng Màu Có Sẵn" />
+    <meta
+      property="og:description"
+      content='"Công cụ phối màu sân Pickleball tiện lợi – Tự do lựa chọn bảng màu chuẩn, tạo nên sân chơi độc đáo và chuyên nghiệp. Truy cập ngay để trải nghiệm miễn phí!"' />
+    <meta
+      property="og:url"
+      content="https://hanoisports.com/phoi-mau-san-pickleball/" />
+    <meta property="og:site_name" content="Thi Công Sân Thể Thao" />
+    <meta
+      property="article:author"
+      content="https://www.facebook.com/thicongsanthethaoso1/" />
+    <meta property="og:updated_time" content="2024-11-20T09:05:41+07:00" />
+    <meta
+      property="og:image"
+      content="https://hanoisports.com/wp-content/uploads/2024/11/mau-san-pickleball-dep-9.webp" />
+    <meta
+      property="og:image:secure_url"
+      content="https://hanoisports.com/wp-content/uploads/2024/11/mau-san-pickleball-dep-9.webp" />
+    <meta property="og:image:width" content="800" />
+    <meta property="og:image:height" content="500" />
+    <meta property="og:image:alt" content="Phối màu sân Pickleball tinh tế" />
+    <meta property="og:image:type" content="image/webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Tự Do Phối Màu Sân Pickleball Với Bảng Màu Có Sẵn" />
+    <meta
+      name="twitter:description"
+      content='"Công cụ phối màu sân Pickleball tiện lợi – Tự do lựa chọn bảng màu chuẩn, tạo nên sân chơi độc đáo và chuyên nghiệp. Truy cập ngay để trải nghiệm miễn phí!"' />
+    <meta
+      name="twitter:image"
+      content="https://hanoisports.com/wp-content/uploads/2024/11/mau-san-pickleball-dep-9.webp" />
+    <meta name="twitter:label1" content="Thời gian để đọc" />
+    <meta name="twitter:data1" content="Chưa đến một phút" />
+    <script type="application/ld+json" class="rank-math-schema-pro">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "name": "H\u00f9ng B\u00e1ch",
+            "description": "T\u00f4i t\u00ean l\u00e0 L\u01b0u H\u00f9ng B\u00e1ch. Gi\u00e1m \u0111\u1ed1c C\u00f4ng Ty C\u00f4ng Tr\u00ecnh Th\u1ec3 Thao H\u00e0 N\u1ed9i. \u0110\u01a1n v\u1ecb chuy\u00ean cung c\u1ea5p v\u1eadt t\u01b0 thi c\u00f4ng s\u00e0n cao su Epdm, \u0111\u01b0\u1eddng ch\u1ea1y \u0111i\u1ec1n kinh, s\u00e0n th\u1ec3 thao tr\u00ean to\u00e0n qu\u1ed1c.",
+            "email": "hanoisports.com@gmail.com",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "X\u00e3 H\u00f2a X\u00e1",
+              "addressLocality": "Huy\u1ec7n \u1ee8ng H\u00f2a",
+              "addressRegion": "H\u00e0 N\u1ed9i",
+              "postalCode": "13817",
+              "addressCountry": "Vi\u1ec7t Nam"
+            },
+            "gender": "Male",
+            "jobTitle": "Founder",
+            "sameAs": [],
+            "@id": "https://hanoisports.com/phoi-mau-san-pickleball/#schema-11615",
+            "image": {
+              "@id": "https://hanoisports.com/wp-content/uploads/2024/11/mau-san-pickleball-dep-9.webp"
+            },
+            "mainEntityOfPage": {
+              "@id": "https://hanoisports.com/phoi-mau-san-pickleball/#webpage"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://hanoisports.com/#organization",
+            "name": "C\u00f4ng ty Hanoisports",
+            "logo": {
+              "@type": "ImageObject",
+              "@id": "https://hanoisports.com/#logo",
+              "url": "https://hanoisports.com/wp-content/uploads/2024/02/logo-hanoisports.png",
+              "contentUrl": "https://hanoisports.com/wp-content/uploads/2024/02/logo-hanoisports.png",
+              "caption": "Thi C\u00f4ng S\u00e2n Th\u1ec3 Thao",
+              "inLanguage": "vi",
+              "width": "500",
+              "height": "500"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://hanoisports.com/#website",
+            "url": "https://hanoisports.com",
+            "name": "Thi C\u00f4ng S\u00e2n Th\u1ec3 Thao",
+            "alternateName": "C\u00d4NG TY TNHH C\u00d4NG TR\u00ccNH TH\u1ec2 THAO H\u00c0 N\u1ed8I",
+            "publisher": { "@id": "https://hanoisports.com/#organization" },
+            "inLanguage": "vi"
+          },
+          {
+            "@type": "ImageObject",
+            "@id": "https://hanoisports.com/wp-content/uploads/2024/11/mau-san-pickleball-dep-9.webp",
+            "url": "https://hanoisports.com/wp-content/uploads/2024/11/mau-san-pickleball-dep-9.webp",
+            "width": "800",
+            "height": "500",
+            "caption": "Ph\u1ed1i m\u00e0u s\u00e2n Pickleball tinh t\u1ebf",
+            "inLanguage": "vi"
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://hanoisports.com/phoi-mau-san-pickleball/#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": "1",
+                "item": {
+                  "@id": "https://hanoisports.com",
+                  "name": "Trang ch\u1ee7"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": "2",
+                "item": {
+                  "@id": "https://hanoisports.com/phoi-mau-san-pickleball/",
+                  "name": "Ph\u1ed1i M\u00e0u S\u00e2n Pickleball"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://hanoisports.com/phoi-mau-san-pickleball/#webpage",
+            "url": "https://hanoisports.com/phoi-mau-san-pickleball/",
+            "name": "T\u1ef1 Do Ph\u1ed1i M\u00e0u S\u00e2n Pickleball V\u1edbi B\u1ea3ng M\u00e0u C\u00f3 S\u1eb5n",
+            "datePublished": "2024-11-11T16:48:36+07:00",
+            "dateModified": "2024-11-20T09:05:41+07:00",
+            "isPartOf": { "@id": "https://hanoisports.com/#website" },
+            "primaryImageOfPage": {
+              "@id": "https://hanoisports.com/wp-content/uploads/2024/11/mau-san-pickleball-dep-9.webp"
+            },
+            "inLanguage": "vi",
+            "breadcrumb": {
+              "@id": "https://hanoisports.com/phoi-mau-san-pickleball/#breadcrumb"
+            }
+          }
+        ]
+      }
+    </script>
+    <!-- /Plugin SEO WordPress Rank Math -->
+    <link rel="dns-prefetch" href="//use.fontawesome.com" />
+    <link
+      rel="prefetch"
+      href="https://hanoisports.com/wp-content/themes/flatsome/assets/js/flatsome.js?ver=8e60d746741250b4dd4e" />
+    <link
+      rel="prefetch"
+      href="https://hanoisports.com/wp-content/themes/flatsome/assets/js/chunk.slider.js?ver=3.19.4" />
+    <link
+      rel="prefetch"
+      href="https://hanoisports.com/wp-content/themes/flatsome/assets/js/chunk.popups.js?ver=3.19.4" />
+    <link
+      rel="prefetch"
+      href="https://hanoisports.com/wp-content/themes/flatsome/assets/js/chunk.tooltips.js?ver=3.19.4" />
+    <link
+      rel="prefetch"
+      href="https://hanoisports.com/wp-content/themes/flatsome/assets/js/woocommerce.js?ver=325ad20e90dbc8889310" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Dòng thông tin Hanoisports »"
+      href="https://hanoisports.com/feed/" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Hanoisports » Dòng bình luận"
+      href="https://hanoisports.com/comments/feed/" />
+    <script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+      /* <![CDATA[ */
+      window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/15.0.3\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/15.0.3\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/hanoisports.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.7.2"}};
+      /*! This file is auto-generated */
+      !function(i,n){var o,s,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),r=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));return t.every(function(e,t){return e===r[t]})}function u(e,t,n){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!n(e,"\ud83d\udc26\u200d\u2b1b","\ud83d\udc26\u200b\u2b1b")}return!1}function f(e,t,n){var r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):i.createElement("canvas"),a=r.getContext("2d",{willReadFrequently:!0}),o=(a.textBaseline="top",a.font="600 32px Arial",{});return e.forEach(function(e){o[e]=t(a,e,n)}),o}function t(e){var t=i.createElement("script");t.src=e,t.defer=!0,i.head.appendChild(t)}"undefined"!=typeof Promise&&(o="wpEmojiSettingsSupports",s=["flag","emoji"],n.supports={everything:!0,everythingExceptFlag:!0},e=new Promise(function(e){i.addEventListener("DOMContentLoaded",e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"}),a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=function(e){c(n=e.data),a.terminate(),t(n)})}catch(e){}c(n=f(s,u,p))}t(n)}).then(function(e){for(var t in e)n.supports[t]=e[t],n.supports.everything=n.supports.everything&&n.supports[t],"flag"!==t&&(n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&n.supports[t]);n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&!n.supports.flag,n.DOMReady=!1,n.readyCallback=function(){n.DOMReady=!0}}).then(function(){return e}).then(function(){var e;n.supports.everything||(n.readyCallback(),(e=n.source||{}).concatemoji?t(e.concatemoji):e.wpemoji&&e.twemoji&&(t(e.twemoji),t(e.wpemoji)))}))}((window,document),window._wpemojiSettings);
+      /* ]]> */
+    </script>
+    <style id="wp-emoji-styles-inline-css" type="text/css">
+      img.wp-smiley,
+      img.emoji {
+        display: inline !important;
+        border: none !important;
+        box-shadow: none !important;
+        height: 1em !important;
+        width: 1em !important;
+        margin: 0 0.07em !important;
+        vertical-align: -0.1em !important;
+        background: none !important;
+        padding: 0 !important;
+      }
+    </style>
+    <style id="wp-block-library-inline-css" type="text/css">
+      :root {
+        --wp-admin-theme-color: #007cba;
+        --wp-admin-theme-color--rgb: 0, 124, 186;
+        --wp-admin-theme-color-darker-10: #006ba1;
+        --wp-admin-theme-color-darker-10--rgb: 0, 107, 161;
+        --wp-admin-theme-color-darker-20: #005a87;
+        --wp-admin-theme-color-darker-20--rgb: 0, 90, 135;
+        --wp-admin-border-width-focus: 2px;
+        --wp-block-synced-color: #7a00df;
+        --wp-block-synced-color--rgb: 122, 0, 223;
+        --wp-bound-block-color: var(--wp-block-synced-color);
+      }
+      @media (min-resolution: 192dpi) {
+        :root {
+          --wp-admin-border-width-focus: 1.5px;
+        }
+      }
+      .wp-element-button {
+        cursor: pointer;
+      }
+      :root {
+        --wp--preset--font-size--normal: 16px;
+        --wp--preset--font-size--huge: 42px;
+      }
+      :root .has-very-light-gray-background-color {
+        background-color: #eee;
+      }
+      :root .has-very-dark-gray-background-color {
+        background-color: #313131;
+      }
+      :root .has-very-light-gray-color {
+        color: #eee;
+      }
+      :root .has-very-dark-gray-color {
+        color: #313131;
+      }
+      :root .has-vivid-green-cyan-to-vivid-cyan-blue-gradient-background {
+        background: linear-gradient(135deg, #00d084, #0693e3);
+      }
+      :root .has-purple-crush-gradient-background {
+        background: linear-gradient(135deg, #34e2e4, #4721fb 50%, #ab1dfe);
+      }
+      :root .has-hazy-dawn-gradient-background {
+        background: linear-gradient(135deg, #faaca8, #dad0ec);
+      }
+      :root .has-subdued-olive-gradient-background {
+        background: linear-gradient(135deg, #fafae1, #67a671);
+      }
+      :root .has-atomic-cream-gradient-background {
+        background: linear-gradient(135deg, #fdd79a, #004a59);
+      }
+      :root .has-nightshade-gradient-background {
+        background: linear-gradient(135deg, #330968, #31cdcf);
+      }
+      :root .has-midnight-gradient-background {
+        background: linear-gradient(135deg, #020381, #2874fc);
+      }
+      .has-regular-font-size {
+        font-size: 1em;
+      }
+      .has-larger-font-size {
+        font-size: 2.625em;
+      }
+      .has-normal-font-size {
+        font-size: var(--wp--preset--font-size--normal);
+      }
+      .has-huge-font-size {
+        font-size: var(--wp--preset--font-size--huge);
+      }
+      .has-text-align-center {
+        text-align: center;
+      }
+      .has-text-align-left {
+        text-align: left;
+      }
+      .has-text-align-right {
+        text-align: right;
+      }
+      #end-resizable-editor-section {
+        display: none;
+      }
+      .aligncenter {
+        clear: both;
+      }
+      .items-justified-left {
+        justify-content: flex-start;
+      }
+      .items-justified-center {
+        justify-content: center;
+      }
+      .items-justified-right {
+        justify-content: flex-end;
+      }
+      .items-justified-space-between {
+        justify-content: space-between;
+      }
+      .screen-reader-text {
+        border: 0;
+        clip: rect(1px, 1px, 1px, 1px);
+        clip-path: inset(50%);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+        word-wrap: normal !important;
+      }
+      .screen-reader-text:focus {
+        background-color: #ddd;
+        clip: auto !important;
+        clip-path: none;
+        color: #444;
+        display: block;
+        font-size: 1em;
+        height: auto;
+        left: 5px;
+        line-height: normal;
+        padding: 15px 23px 14px;
+        text-decoration: none;
+        top: 5px;
+        width: auto;
+        z-index: 100000;
+      }
+      html :where(.has-border-color) {
+        border-style: solid;
+      }
+      html :where([style*="border-top-color"]) {
+        border-top-style: solid;
+      }
+      html :where([style*="border-right-color"]) {
+        border-right-style: solid;
+      }
+      html :where([style*="border-bottom-color"]) {
+        border-bottom-style: solid;
+      }
+      html :where([style*="border-left-color"]) {
+        border-left-style: solid;
+      }
+      html :where([style*="border-width"]) {
+        border-style: solid;
+      }
+      html :where([style*="border-top-width"]) {
+        border-top-style: solid;
+      }
+      html :where([style*="border-right-width"]) {
+        border-right-style: solid;
+      }
+      html :where([style*="border-bottom-width"]) {
+        border-bottom-style: solid;
+      }
+      html :where([style*="border-left-width"]) {
+        border-left-style: solid;
+      }
+      html :where(img[class*="wp-image-"]) {
+        height: auto;
+        max-width: 100%;
+      }
+      :where(figure) {
+        margin: 0 0 1em;
+      }
+      html :where(.is-position-sticky) {
+        --wp-admin--admin-bar--position-offset: var(
+          --wp-admin--admin-bar--height,
+          0px
+        );
+      }
+      @media screen and (max-width: 600px) {
+        html :where(.is-position-sticky) {
+          --wp-admin--admin-bar--position-offset: 0px;
+        }
+      }
+    </style>
+    <link
+      data-minify="1"
+      rel="stylesheet"
+      id="wpshare247.com_piew.css-css"
+      href="https://hanoisports.com/wp-content/cache/min/1/wp-content/plugins/product-image-hover-effects-wooc-wpshare247/assets/piew.css?ver=1732180876"
+      type="text/css"
+      media="all" />
+    <link
+      rel="stylesheet"
+      id="wpshare247.com_piew_jquery.fancybox.min.css-css"
+      href="https://hanoisports.com/wp-content/plugins/product-image-hover-effects-wooc-wpshare247/assets/js/fancybox/dist/jquery.fancybox.min.css?ver=3.5.7"
+      type="text/css"
+      media="all" />
+    <link
+      data-minify="1"
+      rel="stylesheet"
+      id="twenty20-css"
+      href="https://hanoisports.com/wp-content/cache/min/1/wp-content/plugins/twenty20/assets/css/twenty20.css?ver=1732180876"
+      type="text/css"
+      media="all" />
+    <link
+      data-minify="1"
+      rel="stylesheet"
+      id="vts-tennis-style-css"
+      href="https://hanoisports.com/wp-content/cache/min/1/wp-content/plugins/vts-tennis_pickleball/style.css?ver=1732180876"
+      type="text/css"
+      media="all" />
+    <style id="woocommerce-inline-inline-css" type="text/css">
+      .woocommerce form .form-row .required {
+        visibility: visible;
+      }
+    </style>
+    <link
+      data-minify="1"
+      rel="stylesheet"
+      id="contact-form-7-css"
+      href="https://hanoisports.com/wp-content/cache/min/1/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=1732180876"
+      type="text/css"
+      media="all" />
+    <link
+      rel="stylesheet"
+      id="wpcf7-redirect-script-frontend-css"
+      href="https://hanoisports.com/wp-content/plugins/wpcf7-redirect/build/css/wpcf7-redirect-frontend.min.css?ver=1.1"
+      type="text/css"
+      media="all" />
+    <link
+      data-minify="1"
+      rel="stylesheet"
+      id="pzf-style-css"
+      href="https://hanoisports.com/wp-content/cache/min/1/wp-content/plugins/button-contact-vr/legacy/css/style.css?ver=1732180876"
+      type="text/css"
+      media="all" />
+    <link
+      data-minify="1"
+      rel="stylesheet"
+      id="flatsome-swatches-frontend-css"
+      href="https://hanoisports.com/wp-content/cache/min/1/wp-content/themes/flatsome/assets/css/extensions/flatsome-swatches-frontend.css?ver=1732180876"
+      type="text/css"
+      media="all" />
+    <link
+      data-minify="1"
+      rel="stylesheet"
+      id="font-awesome-official-css"
+      href="https://hanoisports.com/wp-content/cache/min/1/releases/v6.4.0/css/all.css?ver=1732180877"
+      type="text/css"
+      media="all"
+      crossorigin="anonymous" />
+    <link
+      data-minify="1"
+      rel="stylesheet"
+      id="popup-maker-site-css"
+      href="https://hanoisports.com/wp-content/cache/min/1/wp-content/uploads/pum/pum-site-styles.css?ver=1732180877"
+      type="text/css"
+      media="all" />
+    <link
+      data-minify="1"
+      rel="stylesheet"
+      id="flatsome-main-css"
+      href="https://hanoisports.com/wp-content/cache/min/1/wp-content/themes/flatsome/assets/css/flatsome.css?ver=1732180877"
+      type="text/css"
+      media="all" />
+    <style id="flatsome-main-inline-css" type="text/css">
+      @font-face {
+        font-family: "fl-icons";
+        font-display: block;
+        src: url(https://hanoisports.com/wp-content/themes/flatsome/assets/css/icons/fl-icons.eot?v=3.19.4);
+        src: url(https://hanoisports.com/wp-content/themes/flatsome/assets/css/icons/fl-icons.eot#iefix?v=3.19.4)
+            format("embedded-opentype"),
+          url(https://hanoisports.com/wp-content/themes/flatsome/assets/css/icons/fl-icons.woff2?v=3.19.4)
+            format("woff2"),
+          url(https://hanoisports.com/wp-content/themes/flatsome/assets/css/icons/fl-icons.ttf?v=3.19.4)
+            format("truetype"),
+          url(https://hanoisports.com/wp-content/themes/flatsome/assets/css/icons/fl-icons.woff?v=3.19.4)
+            format("woff"),
+          url(https://hanoisports.com/wp-content/themes/flatsome/assets/css/icons/fl-icons.svg?v=3.19.4#fl-icons)
+            format("svg");
+      }
+    </style>
+    <link
+      data-minify="1"
+      rel="stylesheet"
+      id="flatsome-shop-css"
+      href="https://hanoisports.com/wp-content/cache/min/1/wp-content/themes/flatsome/assets/css/flatsome-shop.css?ver=1732180877"
+      type="text/css"
+      media="all" />
+    <link
+      rel="stylesheet"
+      id="flatsome-style-css"
+      href="https://hanoisports.com/wp-content/themes/flatsome-child/style.css?ver=3.0"
+      type="text/css"
+      media="all" />
+    <style id="rocket-lazyload-inline-css" type="text/css">
+      .rll-youtube-player {
+        position: relative;
+        padding-bottom: 56.23%;
+        height: 0;
+        overflow: hidden;
+        max-width: 100%;
+      }
+      .rll-youtube-player:focus-within {
+        outline: 2px solid currentColor;
+        outline-offset: 5px;
+      }
+      .rll-youtube-player iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 100;
+        background: 0 0;
+      }
+      .rll-youtube-player img {
+        bottom: 0;
+        display: block;
+        left: 0;
+        margin: auto;
+        max-width: 100%;
+        width: 100%;
+        position: absolute;
+        right: 0;
+        top: 0;
+        border: none;
+        height: auto;
+        -webkit-transition: 0.4s all;
+        -moz-transition: 0.4s all;
+        transition: 0.4s all;
+      }
+      .rll-youtube-player img:hover {
+        -webkit-filter: brightness(75%);
+      }
+      .rll-youtube-player .play {
+        height: 100%;
+        width: 100%;
+        left: 0;
+        top: 0;
+        position: absolute;
+        background: url(https://hanoisports.com/wp-content/plugins/wp-rocket/assets/img/youtube.png)
+          no-repeat center;
+        background-color: transparent !important;
+        cursor: pointer;
+        border: none;
+      }
+    </style>
+    <link
+      data-minify="1"
+      rel="stylesheet"
+      id="font-awesome-official-v4shim-css"
+      href="https://hanoisports.com/wp-content/cache/min/1/releases/v6.4.0/css/v4-shims.css?ver=1732180877"
+      type="text/css"
+      media="all"
+      crossorigin="anonymous" />
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-includes/js/jquery/jquery.min.js?ver=3.7.1"
+      id="jquery-core-js"></script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1"
+      id="jquery-migrate-js"
+      defer></script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/plugins/product-image-hover-effects-wooc-wpshare247/assets/js/fancybox/dist/jquery.fancybox.min.js?ver=3.5.7"
+      id="wpshare247.com_piew_jquery.fancybox.min.js-js"
+      defer></script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/plugins/woocommerce/assets/js/jquery-blockui/jquery.blockUI.min.js?ver=2.7.0-wc.9.5.2"
+      id="jquery-blockui-js"
+      data-wp-strategy="defer"
+      defer></script>
+    <script type="text/javascript" id="wc-add-to-cart-js-extra">
+      /* <![CDATA[ */
+      var wc_add_to_cart_params = {
+        ajax_url: "\/wp-admin\/admin-ajax.php",
+        wc_ajax_url: "\/?wc-ajax=%%endpoint%%",
+        i18n_view_cart: "Xem gi\u1ecf h\u00e0ng",
+        cart_url: "https:\/\/hanoisports.com\/gio-hang\/",
+        is_cart: "",
+        cart_redirect_after_add: "no",
+      };
+      /* ]]> */
+    </script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/plugins/woocommerce/assets/js/frontend/add-to-cart.min.js?ver=9.5.2"
+      id="wc-add-to-cart-js"
+      defer="defer"
+      data-wp-strategy="defer"></script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/plugins/woocommerce/assets/js/js-cookie/js.cookie.min.js?ver=2.1.4-wc.9.5.2"
+      id="js-cookie-js"
+      data-wp-strategy="defer"
+      defer></script>
+    <link rel="https://api.w.org/" href="https://hanoisports.com/wp-json/" />
+    <link
+      rel="alternate"
+      title="JSON"
+      type="application/json"
+      href="https://hanoisports.com/wp-json/wp/v2/pages/3167" />
+    <link
+      rel="EditURI"
+      type="application/rsd+xml"
+      title="RSD"
+      href="https://hanoisports.com/xmlrpc.php?rsd" />
+    <meta name="generator" content="WordPress 6.7.2" />
+    <link rel="shortlink" href="https://hanoisports.com/?p=3167" />
+    <link
+      rel="alternate"
+      title="oNhúng (JSON)"
+      type="application/json+oembed"
+      href="https://hanoisports.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fhanoisports.com%2Fphoi-mau-san-pickleball%2F" />
+    <link
+      rel="alternate"
+      title="oNhúng (XML)"
+      type="text/xml+oembed"
+      href="https://hanoisports.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fhanoisports.com%2Fphoi-mau-san-pickleball%2F&amp;format=xml" />
+    <!-- Google Tag Manager -->
+
+    <script type="rocketlazyloadscript">
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-TZG48VF');
+    </script>
+    <!-- End Google Tag Manager -->
+    <meta name="p:domain_verify" content="77e5f5e3a740c7fabf0c6f0ba1c41459" />
+    <script
+      type="rocketlazyloadscript"
+      async
+      data-rocket-src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8168621493569791"
+      crossorigin="anonymous"></script>
+    <noscript>
+      <style>
+        .woocommerce-product-gallery {
+          opacity: 1 !important;
+        }
+      </style></noscript
+    >
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      id="google_gtagjs"
+      data-rocket-src="https://www.googletagmanager.com/gtag/js?id=G-LEPF4F4B8Z"
+      async="async"></script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      id="google_gtagjs-inline">
+      /* <![CDATA[ */
+      window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-LEPF4F4B8Z', {} );
+      /* ]]> */
+    </script>
+    <style class="wp-fonts-local" type="text/css">
+      @font-face {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 300 900;
+        font-display: fallback;
+        src: url("https://hanoisports.com/wp-content/plugins/woocommerce/assets/fonts/Inter-VariableFont_slnt,wght.woff2")
+          format("woff2");
+        font-stretch: normal;
+      }
+      @font-face {
+        font-family: Cardo;
+        font-style: normal;
+        font-weight: 400;
+        font-display: fallback;
+        src: url("https://hanoisports.com/wp-content/plugins/woocommerce/assets/fonts/cardo_normal_400.woff2")
+          format("woff2");
+      }
+    </style>
+    <link
+      rel="icon"
+      href="https://hanoisports.com/wp-content/uploads/2024/03/Logo-1280x1280-1-45x45.jpg"
+      sizes="32x32" />
+    <link
+      rel="icon"
+      href="https://hanoisports.com/wp-content/uploads/2024/03/Logo-1280x1280-1-300x300.jpg"
+      sizes="192x192" />
+    <link
+      rel="apple-touch-icon"
+      href="https://hanoisports.com/wp-content/uploads/2024/03/Logo-1280x1280-1-300x300.jpg" />
+    <meta
+      name="msapplication-TileImage"
+      content="https://hanoisports.com/wp-content/uploads/2024/03/Logo-1280x1280-1-300x300.jpg" />
+
+    <style id="custom-css" type="text/css">
+      :root {
+        --primary-color: #6aafe3;
+        --fs-color-primary: #6aafe3;
+        --fs-color-secondary: #232e3a;
+        --fs-color-success: #7a9c59;
+        --fs-color-alert: #b20000;
+        --fs-experimental-link-color: #dd3333;
+        --fs-experimental-link-color-hover: #111;
+      }
+      .tooltipster-base {
+        --tooltip-color: #fff;
+        --tooltip-bg-color: #000;
+      }
+      .off-canvas-right .mfp-content,
+      .off-canvas-left .mfp-content {
+        --drawer-width: 300px;
+      }
+      .off-canvas .mfp-content.off-canvas-cart {
+        --drawer-width: 360px;
+      }
+      .container-width,
+      .full-width .ubermenu-nav,
+      .container,
+      .row {
+        max-width: 1170px;
+      }
+      .row.row-collapse {
+        max-width: 1140px;
+      }
+      .row.row-small {
+        max-width: 1162.5px;
+      }
+      .row.row-large {
+        max-width: 1200px;
+      }
+      .header-main {
+        height: 85px;
+      }
+      #logo img {
+        max-height: 85px;
+      }
+      #logo {
+        width: 360px;
+      }
+      .header-bottom {
+        min-height: 60px;
+      }
+      .header-top {
+        min-height: 45px;
+      }
+      .transparent .header-main {
+        height: 30px;
+      }
+      .transparent #logo img {
+        max-height: 30px;
+      }
+      .has-transparent + .page-title:first-of-type,
+      .has-transparent + #main > .page-title,
+      .has-transparent + #main > div > .page-title,
+      .has-transparent + #main .page-header-wrapper:first-of-type .page-title {
+        padding-top: 80px;
+      }
+      .header.show-on-scroll,
+      .stuck .header-main {
+        height: 70px !important;
+      }
+      .stuck #logo img {
+        max-height: 70px !important;
+      }
+      .search-form {
+        width: 60%;
+      }
+      .header-bg-color {
+        background-color: #232e3a;
+      }
+      .header-bottom {
+        background-color: #ffffff;
+      }
+      .top-bar-nav > li > a {
+        line-height: 16px;
+      }
+      .header-main .nav > li > a {
+        line-height: 16px;
+      }
+      .stuck .header-main .nav > li > a {
+        line-height: 50px;
+      }
+      .header-bottom-nav > li > a {
+        line-height: 22px;
+      }
+      @media (max-width: 549px) {
+        .header-main {
+          height: 70px;
+        }
+        #logo img {
+          max-height: 70px;
+        }
+      }
+      .main-menu-overlay {
+        background-color: #232e3a;
+      }
+      .nav-dropdown {
+        border-radius: 10px;
+      }
+      .nav-dropdown {
+        font-size: 95%;
+      }
+      .nav-dropdown-has-arrow li.has-dropdown:after {
+        border-bottom-color: #ffffff;
+      }
+      .nav .nav-dropdown {
+        background-color: #ffffff;
+      }
+      body {
+        color: #303030;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .heading-font {
+        color: #0f2a45;
+      }
+      body {
+        font-size: 105%;
+      }
+      @media screen and (max-width: 549px) {
+        body {
+          font-size: 110%;
+        }
+      }
+      body {
+        font-family: Roboto, sans-serif;
+      }
+      body {
+        font-weight: 500;
+        font-style: normal;
+      }
+      .nav > li > a {
+        font-family: "Roboto Condensed", sans-serif;
+      }
+      .mobile-sidebar-levels-2 .nav > li > ul > li > a {
+        font-family: "Roboto Condensed", sans-serif;
+      }
+      .nav > li > a,
+      .mobile-sidebar-levels-2 .nav > li > ul > li > a {
+        font-weight: 700;
+        font-style: normal;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .heading-font,
+      .off-canvas-center .nav-sidebar.nav-vertical > li > a {
+        font-family: "Roboto Slab", sans-serif;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .heading-font,
+      .banner h1,
+      .banner h2 {
+        font-weight: 700;
+        font-style: normal;
+      }
+      .alt-font {
+        font-family: "Roboto Slab", sans-serif;
+      }
+      .alt-font {
+        font-weight: 300 !important;
+        font-style: normal !important;
+      }
+      .header:not(.transparent) .header-bottom-nav.nav > li > a {
+        color: #0f2a45;
+      }
+      .badge-inner.on-sale {
+        background-color: #1e73be;
+      }
+      .price del,
+      .product_list_widget del,
+      del .woocommerce-Price-amount {
+        color: #000000;
+      }
+      ins .woocommerce-Price-amount {
+        color: #dd3333;
+      }
+      @media screen and (min-width: 550px) {
+        .products .box-vertical .box-image {
+          min-width: 600px !important;
+          width: 600px !important;
+        }
+      }
+      .absolute-footer,
+      html {
+        background-color: #232e3a;
+      }
+      .nav-vertical-fly-out > li + li {
+        border-top-width: 1px;
+        border-top-style: solid;
+      } /* Custom CSS */
+      .nav-dropdown > li.nav-dropdown-col {
+        display: block;
+      }
+      .nav-dropdown {
+        border: 1px solid #ddd;
+        padding: 0;
+      }
+      .nav-dropdown .nav-dropdown-col > a,
+      .nav-dropdown li a {
+        font-weight: normal !important;
+        text-transform: none !important;
+        font-size: 15px;
+        font-weight: 500;
+      }
+      .nav-dropdown .nav-dropdown-col > ul li:hover {
+        background: ;
+      }
+      .nav-dropdown-default > li:hover > a,
+      .nav-dropdown .nav-dropdown-col > ul li:hover > a {
+        color: white;
+      }
+      .nav-dropdown-default > li:hover {
+        background: #fbae3c;
+      }
+      .nav-dropdown-default > li > a {
+        border-bottom: 0 !important;
+      }
+      .nav-dropdown-has-arrow li.has-dropdown:before {
+        border-width: 10px;
+        margin-left: -10px;
+      }
+      .nav-dropdown .nav-dropdown-col > ul {
+        border: 1px solid #d2d2d2;
+        margin-top: -40px;
+        box-shadow: 2px 2px 5px #828282;
+        display: none;
+        position: absolute;
+        left: 100%;
+        z-index: 9;
+        background: white;
+        min-width: 240px;
+      }
+      .nav-dropdown > li.nav-dropdown-col {
+        width: 100%;
+        border-right: 0;
+      }
+      .nav-dropdown .nav-dropdown-col > ul li a {
+        padding: 10px;
+        text-transform: none;
+        color: black;
+      }
+      .header-nav li.nav-dropdown-col:hover > ul {
+        display: block !important;
+      }
+      body {
+        font-family: "Tahoma", sans-serif;
+      }
+      .nav > li > a {
+        font-family: "Tahoma", sans-serif;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .heading-font {
+        font-family: "Tahoma", sans-serif;
+      }
+      .alt-font {
+        font-family: "Tahoma", sans-serif;
+      }
+      .label-new.menu-item > a:after {
+        content: "Mới";
+      }
+      .label-hot.menu-item > a:after {
+        content: "Thịnh hành";
+      }
+      .label-sale.menu-item > a:after {
+        content: "Giảm giá";
+      }
+      .label-popular.menu-item > a:after {
+        content: "Phổ biến";
+      }
+    </style>
+    <style type="text/css" id="wp-custom-css">
+      .blog-archive h1.page-title {
+        display: none;
+      }
+      table tr:nth-child(1) {
+        background: #124750;
+        color: #fff;
+      }
+      table tr:nth-child(1) td {
+        color: #fff;
+      }
+      table {
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+        border-spacing: 0;
+      }
+      table td {
+        border: 1px solid #124750;
+      }
+    </style>
+    <style id="flatsome-swatches-css">
+      .variations_form .ux-swatch.selected {
+        box-shadow: 0 0 0 2px var(--fs-color-secondary);
+      }
+      .ux-swatches-in-loop .ux-swatch.selected {
+        box-shadow: 0 0 0 2px var(--fs-color-secondary);
+      }
+    </style>
+    <style id="kirki-inline-styles">
+      /* cyrillic-ext */
+      @font-face {
+        font-family: "Roboto Slab";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-slab/BngMUXZYTXPIvIBgJJSb6ufA5qW54A.woff2)
+          format("woff2");
+        unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF,
+          U+A640-A69F, U+FE2E-FE2F;
+      }
+      /* cyrillic */
+      @font-face {
+        font-family: "Roboto Slab";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-slab/BngMUXZYTXPIvIBgJJSb6ufJ5qW54A.woff2)
+          format("woff2");
+        unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+      }
+      /* greek-ext */
+      @font-face {
+        font-family: "Roboto Slab";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-slab/BngMUXZYTXPIvIBgJJSb6ufB5qW54A.woff2)
+          format("woff2");
+        unicode-range: U+1F00-1FFF;
+      }
+      /* greek */
+      @font-face {
+        font-family: "Roboto Slab";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-slab/BngMUXZYTXPIvIBgJJSb6ufO5qW54A.woff2)
+          format("woff2");
+        unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C,
+          U+038E-03A1, U+03A3-03FF;
+      }
+      /* vietnamese */
+      @font-face {
+        font-family: "Roboto Slab";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-slab/BngMUXZYTXPIvIBgJJSb6ufC5qW54A.woff2)
+          format("woff2");
+        unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169,
+          U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309,
+          U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+      }
+      /* latin-ext */
+      @font-face {
+        font-family: "Roboto Slab";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-slab/BngMUXZYTXPIvIBgJJSb6ufD5qW54A.woff2)
+          format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+          U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+          U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+          U+A720-A7FF;
+      }
+      /* latin */
+      @font-face {
+        font-family: "Roboto Slab";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-slab/BngMUXZYTXPIvIBgJJSb6ufN5qU.woff2)
+          format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+          U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+          U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      /* cyrillic-ext */
+      @font-face {
+        font-family: "Roboto Slab";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-slab/BngMUXZYTXPIvIBgJJSb6ufA5qW54A.woff2)
+          format("woff2");
+        unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF,
+          U+A640-A69F, U+FE2E-FE2F;
+      }
+      /* cyrillic */
+      @font-face {
+        font-family: "Roboto Slab";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-slab/BngMUXZYTXPIvIBgJJSb6ufJ5qW54A.woff2)
+          format("woff2");
+        unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+      }
+      /* greek-ext */
+      @font-face {
+        font-family: "Roboto Slab";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-slab/BngMUXZYTXPIvIBgJJSb6ufB5qW54A.woff2)
+          format("woff2");
+        unicode-range: U+1F00-1FFF;
+      }
+      /* greek */
+      @font-face {
+        font-family: "Roboto Slab";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-slab/BngMUXZYTXPIvIBgJJSb6ufO5qW54A.woff2)
+          format("woff2");
+        unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C,
+          U+038E-03A1, U+03A3-03FF;
+      }
+      /* vietnamese */
+      @font-face {
+        font-family: "Roboto Slab";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-slab/BngMUXZYTXPIvIBgJJSb6ufC5qW54A.woff2)
+          format("woff2");
+        unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169,
+          U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309,
+          U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+      }
+      /* latin-ext */
+      @font-face {
+        font-family: "Roboto Slab";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-slab/BngMUXZYTXPIvIBgJJSb6ufD5qW54A.woff2)
+          format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+          U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+          U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+          U+A720-A7FF;
+      }
+      /* latin */
+      @font-face {
+        font-family: "Roboto Slab";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-slab/BngMUXZYTXPIvIBgJJSb6ufN5qU.woff2)
+          format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+          U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+          U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      } /* cyrillic-ext */
+      @font-face {
+        font-family: "Roboto";
+        font-style: normal;
+        font-weight: 500;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWub2bVmZiArmlw.woff2)
+          format("woff2");
+        unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF,
+          U+A640-A69F, U+FE2E-FE2F;
+      }
+      /* cyrillic */
+      @font-face {
+        font-family: "Roboto";
+        font-style: normal;
+        font-weight: 500;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWub2bVmQiArmlw.woff2)
+          format("woff2");
+        unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+      }
+      /* greek-ext */
+      @font-face {
+        font-family: "Roboto";
+        font-style: normal;
+        font-weight: 500;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWub2bVmYiArmlw.woff2)
+          format("woff2");
+        unicode-range: U+1F00-1FFF;
+      }
+      /* greek */
+      @font-face {
+        font-family: "Roboto";
+        font-style: normal;
+        font-weight: 500;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWub2bVmXiArmlw.woff2)
+          format("woff2");
+        unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C,
+          U+038E-03A1, U+03A3-03FF;
+      }
+      /* math */
+      @font-face {
+        font-family: "Roboto";
+        font-style: normal;
+        font-weight: 500;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWub2bVnoiArmlw.woff2)
+          format("woff2");
+        unicode-range: U+0302-0303, U+0305, U+0307-0308, U+0310, U+0312, U+0315,
+          U+031A, U+0326-0327, U+032C, U+032F-0330, U+0332-0333, U+0338, U+033A,
+          U+0346, U+034D, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+03D1,
+          U+03D5-03D6, U+03F0-03F1, U+03F4-03F5, U+2016-2017, U+2034-2038,
+          U+203C, U+2040, U+2043, U+2047, U+2050, U+2057, U+205F, U+2070-2071,
+          U+2074-208E, U+2090-209C, U+20D0-20DC, U+20E1, U+20E5-20EF,
+          U+2100-2112, U+2114-2115, U+2117-2121, U+2123-214F, U+2190, U+2192,
+          U+2194-21AE, U+21B0-21E5, U+21F1-21F2, U+21F4-2211, U+2213-2214,
+          U+2216-22FF, U+2308-230B, U+2310, U+2319, U+231C-2321, U+2336-237A,
+          U+237C, U+2395, U+239B-23B7, U+23D0, U+23DC-23E1, U+2474-2475, U+25AF,
+          U+25B3, U+25B7, U+25BD, U+25C1, U+25CA, U+25CC, U+25FB, U+266D-266F,
+          U+27C0-27FF, U+2900-2AFF, U+2B0E-2B11, U+2B30-2B4C, U+2BFE, U+3030,
+          U+FF5B, U+FF5D, U+1D400-1D7FF, U+1EE00-1EEFF;
+      }
+      /* symbols */
+      @font-face {
+        font-family: "Roboto";
+        font-style: normal;
+        font-weight: 500;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWub2bVn6iArmlw.woff2)
+          format("woff2");
+        unicode-range: U+0001-000C, U+000E-001F, U+007F-009F, U+20DD-20E0,
+          U+20E2-20E4, U+2150-218F, U+2190, U+2192, U+2194-2199, U+21AF,
+          U+21E6-21F0, U+21F3, U+2218-2219, U+2299, U+22C4-22C6, U+2300-243F,
+          U+2440-244A, U+2460-24FF, U+25A0-27BF, U+2800-28FF, U+2921-2922,
+          U+2981, U+29BF, U+29EB, U+2B00-2BFF, U+4DC0-4DFF, U+FFF9-FFFB,
+          U+10140-1018E, U+10190-1019C, U+101A0, U+101D0-101FD, U+102E0-102FB,
+          U+10E60-10E7E, U+1D2C0-1D2D3, U+1D2E0-1D37F, U+1F000-1F0FF,
+          U+1F100-1F1AD, U+1F1E6-1F1FF, U+1F30D-1F30F, U+1F315, U+1F31C, U+1F31E,
+          U+1F320-1F32C, U+1F336, U+1F378, U+1F37D, U+1F382, U+1F393-1F39F,
+          U+1F3A7-1F3A8, U+1F3AC-1F3AF, U+1F3C2, U+1F3C4-1F3C6, U+1F3CA-1F3CE,
+          U+1F3D4-1F3E0, U+1F3ED, U+1F3F1-1F3F3, U+1F3F5-1F3F7, U+1F408, U+1F415,
+          U+1F41F, U+1F426, U+1F43F, U+1F441-1F442, U+1F444, U+1F446-1F449,
+          U+1F44C-1F44E, U+1F453, U+1F46A, U+1F47D, U+1F4A3, U+1F4B0, U+1F4B3,
+          U+1F4B9, U+1F4BB, U+1F4BF, U+1F4C8-1F4CB, U+1F4D6, U+1F4DA, U+1F4DF,
+          U+1F4E3-1F4E6, U+1F4EA-1F4ED, U+1F4F7, U+1F4F9-1F4FB, U+1F4FD-1F4FE,
+          U+1F503, U+1F507-1F50B, U+1F50D, U+1F512-1F513, U+1F53E-1F54A,
+          U+1F54F-1F5FA, U+1F610, U+1F650-1F67F, U+1F687, U+1F68D, U+1F691,
+          U+1F694, U+1F698, U+1F6AD, U+1F6B2, U+1F6B9-1F6BA, U+1F6BC,
+          U+1F6C6-1F6CF, U+1F6D3-1F6D7, U+1F6E0-1F6EA, U+1F6F0-1F6F3,
+          U+1F6F7-1F6FC, U+1F700-1F7FF, U+1F800-1F80B, U+1F810-1F847,
+          U+1F850-1F859, U+1F860-1F887, U+1F890-1F8AD, U+1F8B0-1F8BB,
+          U+1F8C0-1F8C1, U+1F900-1F90B, U+1F93B, U+1F946, U+1F984, U+1F996,
+          U+1F9E9, U+1FA00-1FA6F, U+1FA70-1FA7C, U+1FA80-1FA89, U+1FA8F-1FAC6,
+          U+1FACE-1FADC, U+1FADF-1FAE9, U+1FAF0-1FAF8, U+1FB00-1FBFF;
+      }
+      /* vietnamese */
+      @font-face {
+        font-family: "Roboto";
+        font-style: normal;
+        font-weight: 500;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWub2bVmbiArmlw.woff2)
+          format("woff2");
+        unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169,
+          U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309,
+          U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+      }
+      /* latin-ext */
+      @font-face {
+        font-family: "Roboto";
+        font-style: normal;
+        font-weight: 500;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWub2bVmaiArmlw.woff2)
+          format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+          U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+          U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+          U+A720-A7FF;
+      }
+      /* latin */
+      @font-face {
+        font-family: "Roboto";
+        font-style: normal;
+        font-weight: 500;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWub2bVmUiAo.woff2)
+          format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+          U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+          U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      } /* cyrillic-ext */
+      @font-face {
+        font-family: "Roboto Condensed";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-condensed/ieVo2ZhZI2eCN5jzbjEETS9weq8-_d6T_POl0fRJeyVVpcBD5XxxKA.woff2)
+          format("woff2");
+        unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF,
+          U+A640-A69F, U+FE2E-FE2F;
+      }
+      /* cyrillic */
+      @font-face {
+        font-family: "Roboto Condensed";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-condensed/ieVo2ZhZI2eCN5jzbjEETS9weq8-_d6T_POl0fRJeyVVpcBK5XxxKA.woff2)
+          format("woff2");
+        unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+      }
+      /* greek-ext */
+      @font-face {
+        font-family: "Roboto Condensed";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-condensed/ieVo2ZhZI2eCN5jzbjEETS9weq8-_d6T_POl0fRJeyVVpcBC5XxxKA.woff2)
+          format("woff2");
+        unicode-range: U+1F00-1FFF;
+      }
+      /* greek */
+      @font-face {
+        font-family: "Roboto Condensed";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-condensed/ieVo2ZhZI2eCN5jzbjEETS9weq8-_d6T_POl0fRJeyVVpcBN5XxxKA.woff2)
+          format("woff2");
+        unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C,
+          U+038E-03A1, U+03A3-03FF;
+      }
+      /* vietnamese */
+      @font-face {
+        font-family: "Roboto Condensed";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-condensed/ieVo2ZhZI2eCN5jzbjEETS9weq8-_d6T_POl0fRJeyVVpcBB5XxxKA.woff2)
+          format("woff2");
+        unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169,
+          U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309,
+          U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+      }
+      /* latin-ext */
+      @font-face {
+        font-family: "Roboto Condensed";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-condensed/ieVo2ZhZI2eCN5jzbjEETS9weq8-_d6T_POl0fRJeyVVpcBA5XxxKA.woff2)
+          format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+          U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+          U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+          U+A720-A7FF;
+      }
+      /* latin */
+      @font-face {
+        font-family: "Roboto Condensed";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(https://hanoisports.com/wp-content/fonts/roboto-condensed/ieVo2ZhZI2eCN5jzbjEETS9weq8-_d6T_POl0fRJeyVVpcBO5Xw.woff2)
+          format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+          U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+          U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+    </style>
+    <noscript>
+      <style id="rocket-lazyload-nojs-css">
+        .rll-youtube-player,
+        [data-lazy-src] {
+          display: none !important;
+        }
+      </style></noscript
+    >
+    <style>
+      #text-2048678294 {
+        color: rgb(255, 255, 255);
+      }
+      #text-2048678294 > * {
+        color: rgb(255, 255, 255);
+      }
+    </style>
+    <style>
+      #text-3290476242 {
+        color: rgb(255, 255, 255);
+      }
+      #text-3290476242 > * {
+        color: rgb(255, 255, 255);
+      }
+    </style>
+    <style>
+      #text-3454831595 {
+        color: rgb(255, 255, 255);
+      }
+      #text-3454831595 > * {
+        color: rgb(255, 255, 255);
+      }
+    </style>
+    <style>
+      #text-247435634 {
+        color: rgb(255, 255, 255);
+      }
+      #text-247435634 > * {
+        color: rgb(255, 255, 255);
+      }
+    </style>
+    <style>
+      #text-1031916954 {
+        color: rgb(255, 255, 255);
+      }
+      #text-1031916954 > * {
+        color: rgb(255, 255, 255);
+      }
+    </style>
+    <style>
+      #gap-1192837503 {
+        padding-top: 40px;
+      }
+    </style>
+    <style>
+      #gap-1277512458 {
+        padding-top: 40px;
+      }
+    </style>
+    <style>
+      #text-417261400 {
+        color: rgb(255, 255, 255);
+      }
+      #text-417261400 > * {
+        color: rgb(255, 255, 255);
+      }
+    </style>
+    <style>
+      #section_1517804394 {
+        padding-top: 30px;
+        padding-bottom: 30px;
+      }
+      #section_1517804394 .ux-shape-divider--top svg {
+        height: 30px;
+        --divider-top-width: 150%;
+      }
+    </style>
+    <style>
+      .phone-bar a,
+      #phone-vr .phone-vr-circle-fill,
+      #phone-vr .phone-vr-img-circle,
+      #phone-vr .phone-bar a {
+        background-color: #67c538;
+      }
+
+      #phone-vr .phone-vr-circle-fill {
+        opacity: 0.7;
+        box-shadow: 0 0 0 0 #67c538;
+      }
+
+      .phone-bar2 a,
+      #phone-vr2 .phone-vr-circle-fill,
+      #phone-vr2 .phone-vr-img-circle,
+      #phone-vr2 .phone-bar a {
+        background-color: ;
+      }
+
+      #phone-vr2 .phone-vr-circle-fill {
+        opacity: 0.7;
+        box-shadow: 0 0 0 0;
+      }
+
+      .phone-bar3 a,
+      #phone-vr3 .phone-vr-circle-fill,
+      #phone-vr3 .phone-vr-img-circle,
+      #phone-vr3 .phone-bar a {
+        background-color: ;
+      }
+
+      #phone-vr3 .phone-vr-circle-fill {
+        opacity: 0.7;
+        box-shadow: 0 0 0 0;
+      }
+    </style>
+    <style>
+      #contact-vr .phone-vr-circle-fill,
+      #contact-vr .phone-vr-img-circle {
+        background-color: #dd3333;
+      }
+
+      #contact-vr .phone-vr-circle-fill {
+        opacity: 0.7;
+        box-shadow: 0 0 0 0 #dd3333;
+      }
+    </style>
+    <style>
+      #button-contact-vr {
+        transform: scale(0.8);
+      }
+    </style>
+    <style>
+      #button-contact-vr {
+        margin: -10px;
+      }
+    </style>
+    <style>
+      #button-contact-vr {
+        bottom: 30%;
+      }
+    </style>
+    <style id="global-styles-inline-css" type="text/css">
+      :root {
+        --wp--preset--aspect-ratio--square: 1;
+        --wp--preset--aspect-ratio--4-3: 4/3;
+        --wp--preset--aspect-ratio--3-4: 3/4;
+        --wp--preset--aspect-ratio--3-2: 3/2;
+        --wp--preset--aspect-ratio--2-3: 2/3;
+        --wp--preset--aspect-ratio--16-9: 16/9;
+        --wp--preset--aspect-ratio--9-16: 9/16;
+        --wp--preset--color--black: #000000;
+        --wp--preset--color--cyan-bluish-gray: #abb8c3;
+        --wp--preset--color--white: #ffffff;
+        --wp--preset--color--pale-pink: #f78da7;
+        --wp--preset--color--vivid-red: #cf2e2e;
+        --wp--preset--color--luminous-vivid-orange: #ff6900;
+        --wp--preset--color--luminous-vivid-amber: #fcb900;
+        --wp--preset--color--light-green-cyan: #7bdcb5;
+        --wp--preset--color--vivid-green-cyan: #00d084;
+        --wp--preset--color--pale-cyan-blue: #8ed1fc;
+        --wp--preset--color--vivid-cyan-blue: #0693e3;
+        --wp--preset--color--vivid-purple: #9b51e0;
+        --wp--preset--color--primary: #6aafe3;
+        --wp--preset--color--secondary: #232e3a;
+        --wp--preset--color--success: #7a9c59;
+        --wp--preset--color--alert: #b20000;
+        --wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(
+          135deg,
+          rgba(6, 147, 227, 1) 0%,
+          rgb(155, 81, 224) 100%
+        );
+        --wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(
+          135deg,
+          rgb(122, 220, 180) 0%,
+          rgb(0, 208, 130) 100%
+        );
+        --wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(
+          135deg,
+          rgba(252, 185, 0, 1) 0%,
+          rgba(255, 105, 0, 1) 100%
+        );
+        --wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(
+          135deg,
+          rgba(255, 105, 0, 1) 0%,
+          rgb(207, 46, 46) 100%
+        );
+        --wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(
+          135deg,
+          rgb(238, 238, 238) 0%,
+          rgb(169, 184, 195) 100%
+        );
+        --wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(
+          135deg,
+          rgb(74, 234, 220) 0%,
+          rgb(151, 120, 209) 20%,
+          rgb(207, 42, 186) 40%,
+          rgb(238, 44, 130) 60%,
+          rgb(251, 105, 98) 80%,
+          rgb(254, 248, 76) 100%
+        );
+        --wp--preset--gradient--blush-light-purple: linear-gradient(
+          135deg,
+          rgb(255, 206, 236) 0%,
+          rgb(152, 150, 240) 100%
+        );
+        --wp--preset--gradient--blush-bordeaux: linear-gradient(
+          135deg,
+          rgb(254, 205, 165) 0%,
+          rgb(254, 45, 45) 50%,
+          rgb(107, 0, 62) 100%
+        );
+        --wp--preset--gradient--luminous-dusk: linear-gradient(
+          135deg,
+          rgb(255, 203, 112) 0%,
+          rgb(199, 81, 192) 50%,
+          rgb(65, 88, 208) 100%
+        );
+        --wp--preset--gradient--pale-ocean: linear-gradient(
+          135deg,
+          rgb(255, 245, 203) 0%,
+          rgb(182, 227, 212) 50%,
+          rgb(51, 167, 181) 100%
+        );
+        --wp--preset--gradient--electric-grass: linear-gradient(
+          135deg,
+          rgb(202, 248, 128) 0%,
+          rgb(113, 206, 126) 100%
+        );
+        --wp--preset--gradient--midnight: linear-gradient(
+          135deg,
+          rgb(2, 3, 129) 0%,
+          rgb(40, 116, 252) 100%
+        );
+        --wp--preset--font-size--small: 13px;
+        --wp--preset--font-size--medium: 20px;
+        --wp--preset--font-size--large: 36px;
+        --wp--preset--font-size--x-large: 42px;
+        --wp--preset--font-family--inter: "Inter", sans-serif;
+        --wp--preset--font-family--cardo: Cardo;
+        --wp--preset--spacing--20: 0.44rem;
+        --wp--preset--spacing--30: 0.67rem;
+        --wp--preset--spacing--40: 1rem;
+        --wp--preset--spacing--50: 1.5rem;
+        --wp--preset--spacing--60: 2.25rem;
+        --wp--preset--spacing--70: 3.38rem;
+        --wp--preset--spacing--80: 5.06rem;
+        --wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);
+        --wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);
+        --wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);
+        --wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1),
+          6px 6px rgba(0, 0, 0, 1);
+        --wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);
+      }
+      :where(body) {
+        margin: 0;
+      }
+      .wp-site-blocks > .alignleft {
+        float: left;
+        margin-right: 2em;
+      }
+      .wp-site-blocks > .alignright {
+        float: right;
+        margin-left: 2em;
+      }
+      .wp-site-blocks > .aligncenter {
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      :where(.is-layout-flex) {
+        gap: 0.5em;
+      }
+      :where(.is-layout-grid) {
+        gap: 0.5em;
+      }
+      .is-layout-flow > .alignleft {
+        float: left;
+        margin-inline-start: 0;
+        margin-inline-end: 2em;
+      }
+      .is-layout-flow > .alignright {
+        float: right;
+        margin-inline-start: 2em;
+        margin-inline-end: 0;
+      }
+      .is-layout-flow > .aligncenter {
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+      .is-layout-constrained > .alignleft {
+        float: left;
+        margin-inline-start: 0;
+        margin-inline-end: 2em;
+      }
+      .is-layout-constrained > .alignright {
+        float: right;
+        margin-inline-start: 2em;
+        margin-inline-end: 0;
+      }
+      .is-layout-constrained > .aligncenter {
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+      .is-layout-constrained
+        > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+      body .is-layout-flex {
+        display: flex;
+      }
+      .is-layout-flex {
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .is-layout-flex > :is(*, div) {
+        margin: 0;
+      }
+      body .is-layout-grid {
+        display: grid;
+      }
+      .is-layout-grid > :is(*, div) {
+        margin: 0;
+      }
+      body {
+        padding-top: 0px;
+        padding-right: 0px;
+        padding-bottom: 0px;
+        padding-left: 0px;
+      }
+      a:where(:not(.wp-element-button)) {
+        text-decoration: none;
+      }
+      :root :where(.wp-element-button, .wp-block-button__link) {
+        background-color: #32373c;
+        border-width: 0;
+        color: #fff;
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
+        padding: calc(0.667em + 2px) calc(1.333em + 2px);
+        text-decoration: none;
+      }
+      .has-black-color {
+        color: var(--wp--preset--color--black) !important;
+      }
+      .has-cyan-bluish-gray-color {
+        color: var(--wp--preset--color--cyan-bluish-gray) !important;
+      }
+      .has-white-color {
+        color: var(--wp--preset--color--white) !important;
+      }
+      .has-pale-pink-color {
+        color: var(--wp--preset--color--pale-pink) !important;
+      }
+      .has-vivid-red-color {
+        color: var(--wp--preset--color--vivid-red) !important;
+      }
+      .has-luminous-vivid-orange-color {
+        color: var(--wp--preset--color--luminous-vivid-orange) !important;
+      }
+      .has-luminous-vivid-amber-color {
+        color: var(--wp--preset--color--luminous-vivid-amber) !important;
+      }
+      .has-light-green-cyan-color {
+        color: var(--wp--preset--color--light-green-cyan) !important;
+      }
+      .has-vivid-green-cyan-color {
+        color: var(--wp--preset--color--vivid-green-cyan) !important;
+      }
+      .has-pale-cyan-blue-color {
+        color: var(--wp--preset--color--pale-cyan-blue) !important;
+      }
+      .has-vivid-cyan-blue-color {
+        color: var(--wp--preset--color--vivid-cyan-blue) !important;
+      }
+      .has-vivid-purple-color {
+        color: var(--wp--preset--color--vivid-purple) !important;
+      }
+      .has-primary-color {
+        color: var(--wp--preset--color--primary) !important;
+      }
+      .has-secondary-color {
+        color: var(--wp--preset--color--secondary) !important;
+      }
+      .has-success-color {
+        color: var(--wp--preset--color--success) !important;
+      }
+      .has-alert-color {
+        color: var(--wp--preset--color--alert) !important;
+      }
+      .has-black-background-color {
+        background-color: var(--wp--preset--color--black) !important;
+      }
+      .has-cyan-bluish-gray-background-color {
+        background-color: var(--wp--preset--color--cyan-bluish-gray) !important;
+      }
+      .has-white-background-color {
+        background-color: var(--wp--preset--color--white) !important;
+      }
+      .has-pale-pink-background-color {
+        background-color: var(--wp--preset--color--pale-pink) !important;
+      }
+      .has-vivid-red-background-color {
+        background-color: var(--wp--preset--color--vivid-red) !important;
+      }
+      .has-luminous-vivid-orange-background-color {
+        background-color: var(
+          --wp--preset--color--luminous-vivid-orange
+        ) !important;
+      }
+      .has-luminous-vivid-amber-background-color {
+        background-color: var(
+          --wp--preset--color--luminous-vivid-amber
+        ) !important;
+      }
+      .has-light-green-cyan-background-color {
+        background-color: var(--wp--preset--color--light-green-cyan) !important;
+      }
+      .has-vivid-green-cyan-background-color {
+        background-color: var(--wp--preset--color--vivid-green-cyan) !important;
+      }
+      .has-pale-cyan-blue-background-color {
+        background-color: var(--wp--preset--color--pale-cyan-blue) !important;
+      }
+      .has-vivid-cyan-blue-background-color {
+        background-color: var(--wp--preset--color--vivid-cyan-blue) !important;
+      }
+      .has-vivid-purple-background-color {
+        background-color: var(--wp--preset--color--vivid-purple) !important;
+      }
+      .has-primary-background-color {
+        background-color: var(--wp--preset--color--primary) !important;
+      }
+      .has-secondary-background-color {
+        background-color: var(--wp--preset--color--secondary) !important;
+      }
+      .has-success-background-color {
+        background-color: var(--wp--preset--color--success) !important;
+      }
+      .has-alert-background-color {
+        background-color: var(--wp--preset--color--alert) !important;
+      }
+      .has-black-border-color {
+        border-color: var(--wp--preset--color--black) !important;
+      }
+      .has-cyan-bluish-gray-border-color {
+        border-color: var(--wp--preset--color--cyan-bluish-gray) !important;
+      }
+      .has-white-border-color {
+        border-color: var(--wp--preset--color--white) !important;
+      }
+      .has-pale-pink-border-color {
+        border-color: var(--wp--preset--color--pale-pink) !important;
+      }
+      .has-vivid-red-border-color {
+        border-color: var(--wp--preset--color--vivid-red) !important;
+      }
+      .has-luminous-vivid-orange-border-color {
+        border-color: var(
+          --wp--preset--color--luminous-vivid-orange
+        ) !important;
+      }
+      .has-luminous-vivid-amber-border-color {
+        border-color: var(--wp--preset--color--luminous-vivid-amber) !important;
+      }
+      .has-light-green-cyan-border-color {
+        border-color: var(--wp--preset--color--light-green-cyan) !important;
+      }
+      .has-vivid-green-cyan-border-color {
+        border-color: var(--wp--preset--color--vivid-green-cyan) !important;
+      }
+      .has-pale-cyan-blue-border-color {
+        border-color: var(--wp--preset--color--pale-cyan-blue) !important;
+      }
+      .has-vivid-cyan-blue-border-color {
+        border-color: var(--wp--preset--color--vivid-cyan-blue) !important;
+      }
+      .has-vivid-purple-border-color {
+        border-color: var(--wp--preset--color--vivid-purple) !important;
+      }
+      .has-primary-border-color {
+        border-color: var(--wp--preset--color--primary) !important;
+      }
+      .has-secondary-border-color {
+        border-color: var(--wp--preset--color--secondary) !important;
+      }
+      .has-success-border-color {
+        border-color: var(--wp--preset--color--success) !important;
+      }
+      .has-alert-border-color {
+        border-color: var(--wp--preset--color--alert) !important;
+      }
+      .has-vivid-cyan-blue-to-vivid-purple-gradient-background {
+        background: var(
+          --wp--preset--gradient--vivid-cyan-blue-to-vivid-purple
+        ) !important;
+      }
+      .has-light-green-cyan-to-vivid-green-cyan-gradient-background {
+        background: var(
+          --wp--preset--gradient--light-green-cyan-to-vivid-green-cyan
+        ) !important;
+      }
+      .has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background {
+        background: var(
+          --wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange
+        ) !important;
+      }
+      .has-luminous-vivid-orange-to-vivid-red-gradient-background {
+        background: var(
+          --wp--preset--gradient--luminous-vivid-orange-to-vivid-red
+        ) !important;
+      }
+      .has-very-light-gray-to-cyan-bluish-gray-gradient-background {
+        background: var(
+          --wp--preset--gradient--very-light-gray-to-cyan-bluish-gray
+        ) !important;
+      }
+      .has-cool-to-warm-spectrum-gradient-background {
+        background: var(
+          --wp--preset--gradient--cool-to-warm-spectrum
+        ) !important;
+      }
+      .has-blush-light-purple-gradient-background {
+        background: var(--wp--preset--gradient--blush-light-purple) !important;
+      }
+      .has-blush-bordeaux-gradient-background {
+        background: var(--wp--preset--gradient--blush-bordeaux) !important;
+      }
+      .has-luminous-dusk-gradient-background {
+        background: var(--wp--preset--gradient--luminous-dusk) !important;
+      }
+      .has-pale-ocean-gradient-background {
+        background: var(--wp--preset--gradient--pale-ocean) !important;
+      }
+      .has-electric-grass-gradient-background {
+        background: var(--wp--preset--gradient--electric-grass) !important;
+      }
+      .has-midnight-gradient-background {
+        background: var(--wp--preset--gradient--midnight) !important;
+      }
+      .has-small-font-size {
+        font-size: var(--wp--preset--font-size--small) !important;
+      }
+      .has-medium-font-size {
+        font-size: var(--wp--preset--font-size--medium) !important;
+      }
+      .has-large-font-size {
+        font-size: var(--wp--preset--font-size--large) !important;
+      }
+      .has-x-large-font-size {
+        font-size: var(--wp--preset--font-size--x-large) !important;
+      }
+      .has-inter-font-family {
+        font-family: var(--wp--preset--font-family--inter) !important;
+      }
+      .has-cardo-font-family {
+        font-family: var(--wp--preset--font-family--cardo) !important;
+      }
+    </style>
+  </head>
+  <body
+    class="page-template-default page page-id-3167 theme-flatsome woocommerce-no-js lightbox nav-dropdown-has-arrow nav-dropdown-has-shadow nav-dropdown-has-border parallax-mobile mobile-submenu-toggle">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-TZG48VF"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"></iframe
+    ></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <a class="skip-link screen-reader-text" href="#main">Chuyển đến nội dung</a>
+    <div id="wrapper">
+      <main id="main" class="">
+        <div id="content" class="content-area page-wrapper" role="main">
+          <div class="row row-main">
+            <div class="large-12 col">
+              <div class="col-inner">
+                <header class="entry-header has-text-align-center">
+                  <h1 class="entry-title mb uppercase">
+                    Phối Màu Sân Pickleball
+                  </h1>
+                </header>
+                <div class="row">
+                  <div
+                    class="col medium-12 small-12 large-6"
+                    style="
+                      margin: 0 auto;
+                      display: block;
+                      clear: both;
+                      padding-bottom: 10px;
+                    ">
+                    <div
+                      class="row"
+                      style="transform: rotate(90deg) translateX(-70px)">
+                      <div
+                        class="col medium-12 small-12 large-12 courtdesigner-container">
+                        <img
+                          decoding="async"
+                          id="white-lines"
+                          src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E"
+                          alt="white Lines"
+                          class="img-responsive pickleball-white-lines"
+                          title="Phối Màu Sân Pickleball 1"
+                          data-lazy-src="https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/D-Lines-and-Logo-new.png" /><noscript
+                          ><img
+                            decoding="async"
+                            id="white-lines"
+                            src="https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/D-Lines-and-Logo-new.png"
+                            alt="white Lines"
+                            class="img-responsive pickleball-white-lines"
+                            title="Phối Màu Sân Pickleball 1"
+                        /></noscript>
+                        <img
+                          decoding="async"
+                          id="pb-oob"
+                          src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E"
+                          alt="SKP 218"
+                          class="img-responsive pb-a"
+                          title="Phối Màu Sân Pickleball 2"
+                          data-lazy-src="https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/A-SKP-218.png" />
+                        <noscript
+                          ><img
+                            decoding="async"
+                            id="pb-oob"
+                            src="https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/A-SKP-218.png"
+                            alt="SKP 218"
+                            class="img-responsive pb-a"
+                            title="Phối Màu Sân Pickleball 2"
+                        /></noscript>
+                        <img
+                          decoding="async"
+                          id="pb-court"
+                          src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E"
+                          alt="SKP 218"
+                          class="img-responsive pb-b"
+                          title="Phối Màu Sân Pickleball 3"
+                          data-lazy-src="https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/B-SKP-218.png" />
+                        <noscript
+                          ><img
+                            decoding="async"
+                            id="pb-court"
+                            src="https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/B-SKP-218.png"
+                            alt="SKP 218"
+                            class="img-responsive pb-b"
+                            title="Phối Màu Sân Pickleball 3"
+                        /></noscript>
+                        <img
+                          decoding="async"
+                          id="pb-nonvolley"
+                          src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E"
+                          alt="SKP 218"
+                          class="img-responsive pb-c"
+                          title="Phối Màu Sân Pickleball 4"
+                          data-lazy-src="https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/C-SKP-218.png" />
+                        <noscript
+                          ><img
+                            decoding="async"
+                            id="pb-nonvolley"
+                            src="https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/C-SKP-218.png"
+                            alt="SKP 218"
+                            class="img-responsive pb-c"
+                            title="Phối Màu Sân Pickleball 4"
+                        /></noscript>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row" style="width: 100%; margin-top: -38px">
+                    <!-- row 1 -->
+                    <div
+                      class="col medium-12 small-12 large-12 color-selector-area">
+                      <div class="row">
+                        <div class="col medium-12 small-12 large-12 mrg-btm20">
+                          <h2 class="dtl-title">Court</h2>
+                        </div>
+                      </div>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-218 color-bx mrg-rht10"
+                        data-link="B-SKP-218"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-218"
+                        data-type="pb-court"
+                        >SKP-218</a
+                      >
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-101 color-bx mrg-rht10"
+                        data-link="B-SKP-101"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-101"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-103 color-bx mrg-rht10"
+                        data-link="B-SKP-103"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-103"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-112 color-bx mrg-rht10"
+                        data-link="B-SKP-112"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-112"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-113 color-bx mrg-rht10"
+                        data-link="B-SKP-113"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-113"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-115 color-bx mrg-rht10"
+                        data-link="B-SKP-115"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-115"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-117 color-bx mrg-rht10"
+                        data-link="B-SKP-117"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-117"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-118 color-bx mrg-rht10"
+                        data-link="B-SKP-118"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-118"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-201 color-bx mrg-rht10"
+                        data-link="B-SKP-201"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-201"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-203 color-bx mrg-rht10"
+                        data-link="B-SKP-203"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-203"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-204 color-bx mrg-rht10"
+                        data-link="B-SKP-204"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-204"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-211 color-bx mrg-rht10"
+                        data-link="B-SKP-211"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-211"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-212 color-bx mrg-rht10"
+                        data-link="B-SKP-212"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-212"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-213 color-bx mrg-rht10"
+                        data-link="B-SKP-213"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-213"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-214 color-bx mrg-rht10"
+                        data-link="B-SKP-214"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-214"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-215 color-bx mrg-rht10"
+                        data-link="B-SKP-215"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-215"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-216 color-bx mrg-rht10"
+                        data-link="B-SKP-216"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-216"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-217 color-bx mrg-rht10"
+                        data-link="B-SKP-217"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-217"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-219 color-bx mrg-rht10"
+                        data-link="B-SKP-219"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-219"
+                        data-type="pb-court"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-221 color-bx mrg-rht10"
+                        data-link="B-SKP-221"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-221"
+                        data-type="pb-court"></a>
+                    </div>
+                    <div class="clearfix visible-xs"></div>
+                    <!-- row 2 -->
+                    <div
+                      class="col medium-12 small-12 large-12 color-selector-area">
+                      <div class="row">
+                        <div class="col medium-12 small-12 large-12 mrg-btm20">
+                          <h2 class="dtl-title">Border</h2>
+                        </div>
+                      </div>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-218 color-bx mrg-rht10"
+                        data-link="A-SKP-218"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-218"
+                        data-type="pb-oob"
+                        >SKP-218</a
+                      >
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-101 color-bx mrg-rht10"
+                        data-link="A-SKP-101"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-101"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-103 color-bx mrg-rht10"
+                        data-link="A-SKP-103"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-103"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-112 color-bx mrg-rht10"
+                        data-link="A-SKP-112"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-112"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-113 color-bx mrg-rht10"
+                        data-link="A-SKP-113"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-113"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-115 color-bx mrg-rht10"
+                        data-link="A-SKP-115"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-115"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-117 color-bx mrg-rht10"
+                        data-link="A-SKP-117"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-117"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-118 color-bx mrg-rht10"
+                        data-link="A-SKP-118"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-118"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-201 color-bx mrg-rht10"
+                        data-link="A-SKP-201"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-201"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-203 color-bx mrg-rht10"
+                        data-link="A-SKP-203"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-203"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-204 color-bx mrg-rht10"
+                        data-link="A-SKP-204"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-204"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-211 color-bx mrg-rht10"
+                        data-link="A-SKP-211"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-211"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-212 color-bx mrg-rht10"
+                        data-link="A-SKP-212"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-212"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-213 color-bx mrg-rht10"
+                        data-link="A-SKP-213"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-213"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-214 color-bx mrg-rht10"
+                        data-link="A-SKP-214"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-214"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-215 color-bx mrg-rht10"
+                        data-link="A-SKP-215"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-215"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-216 color-bx mrg-rht10"
+                        data-link="A-SKP-216"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-216"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-217 color-bx mrg-rht10"
+                        data-link="A-SKP-217"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-217"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-219 color-bx mrg-rht10"
+                        data-link="A-SKP-219"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-219"
+                        data-type="pb-oob"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-221 color-bx mrg-rht10"
+                        data-link="A-SKP-221"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-221"
+                        data-type="pb-oob"></a>
+                    </div>
+                    <div class="clearfix visible-xs"></div>
+                    <!-- row 3 -->
+                    <div
+                      class="col medium-12 small-12 large-12 color-selector-area">
+                      <div class="row">
+                        <div class="col medium-12 small-12 large-12 mrg-btm20">
+                          <h2 class="dtl-title">Non-Volley Zone</h2>
+                        </div>
+                      </div>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-218 color-bx mrg-rht10"
+                        data-link="C-SKP-218"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-218"
+                        data-type="pb-nonvolley"
+                        >SKP-218</a
+                      >
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-101 color-bx mrg-rht10"
+                        data-link="C-SKP-101"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-101"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-103 color-bx mrg-rht10"
+                        data-link="C-SKP-103"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-103"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-112 color-bx mrg-rht10"
+                        data-link="C-SKP-112"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-112"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-113 color-bx mrg-rht10"
+                        data-link="C-SKP-113"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-113"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-115 color-bx mrg-rht10"
+                        data-link="C-SKP-115"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-115"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-117 color-bx mrg-rht10"
+                        data-link="C-SKP-117"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-117"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-118 color-bx mrg-rht10"
+                        data-link="C-SKP-118"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-118"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-201 color-bx mrg-rht10"
+                        data-link="C-SKP-201"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-201"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-203 color-bx mrg-rht10"
+                        data-link="C-SKP-203"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-203"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-204 color-bx mrg-rht10"
+                        data-link="C-SKP-204"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-204"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-211 color-bx mrg-rht10"
+                        data-link="C-SKP-211"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-211"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-212 color-bx mrg-rht10"
+                        data-link="C-SKP-212"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-212"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-213 color-bx mrg-rht10"
+                        data-link="C-SKP-213"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-213"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-214 color-bx mrg-rht10"
+                        data-link="C-SKP-214"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-214"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-215 color-bx mrg-rht10"
+                        data-link="C-SKP-215"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-215"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-216 color-bx mrg-rht10"
+                        data-link="C-SKP-216"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-216"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-217 color-bx mrg-rht10"
+                        data-link="C-SKP-217"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-217"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-219 color-bx mrg-rht10"
+                        data-link="C-SKP-219"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-219"
+                        data-type="pb-nonvolley"></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="SKP-221 color-bx mrg-rht10"
+                        data-link="C-SKP-221"
+                        data-toggle="tooltip"
+                        data-original-title="SKP-221"
+                        data-type="pb-nonvolley"></a>
+                    </div>
+                    <div class="clearfix visible-xs"></div>
+                  </div>
+                </div>
+                <script type="rocketlazyloadscript">
+                  jQuery(document).ready(function($) { // Pass $ as jQuery alias
+
+                  function updateTooltip(element) {
+                    var tooltipText = $(element).attr("data-original-title");
+                    $(element).find(".tooltip-text").remove(); // Xóa tooltip cũ
+                    $(element).append('<span class="tooltip-text">' + tooltipText + '</span>'); // Thêm tooltip mới
+                  }
+
+                  $(".color-bx").click(function() {
+                  color_name = $(this).attr("data-original-title");
+                  $(this).siblings(".color-bx").empty();
+                  $(this).empty();
+                  $(this).prepend(color_name);
+                  type = $(this).attr("data-type");
+                  if (type == "inner-court") {
+                  colour = $(this).attr("data-link");
+                  alt_tag = $(this).attr("data-original-title");
+                  inner_path = "https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/";
+                  if (colour != "") {
+                    newpath = inner_path + colour + ".png";
+                    $("#inner-court").attr("src", "" + newpath + "");
+                    $("#inner-court").attr("alt", "" + alt_tag + "");
+                  }
+                  } else if (type == "outer-court") {
+                  colour = $(this).attr("data-link");
+                  alt_tag = $(this).attr("data-original-title");
+                  inner_path = "https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/";
+                  if (colour != "") {
+                    newpath = inner_path + colour + ".png";
+                    $("#outer_court").attr("src", "" + newpath + "");
+                    $("#outer_court").attr("alt", "" + alt_tag + "");
+                  }
+                  } else if (type == "pb-nonvolley") {
+                  colour = $(this).attr("data-link");
+                  alt_tag = $(this).attr("data-original-title");
+                  inner_path = "https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/";
+                  if (colour != "") {
+                    newpath = inner_path + colour + ".png";
+                    $("#pb-nonvolley").attr("src", "" + newpath + "");
+                    $("#pb-nonvolley").attr("alt", "" + alt_tag + "");
+                  }
+                  } else if (type == "pb-court") {
+                  colour = $(this).attr("data-link");
+                  alt_tag = $(this).attr("data-original-title");
+                  inner_path = "https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/";
+                  if (colour != "") {
+                    newpath = inner_path + colour + ".png";
+                    $("#pb-court").attr("src", "" + newpath + "");
+                    $("#pb-court").attr("alt", "" + alt_tag + "");
+                  }
+                  } else if (type == "pb-oob") {
+                  colour = $(this).attr("data-link");
+                  alt_tag = $(this).attr("data-original-title");
+                  inner_path = "https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/";
+                  if (colour != "") {
+                    newpath = inner_path + colour + ".png";
+                    $("#pb-oob").attr("src", "" + newpath + "");
+                    $("#pb-oob").attr("alt", "" + alt_tag + "");
+                  }
+                  } else if (type == "bball-centercircle") {
+                  colour = $(this).attr("data-link");
+                  alt_tag = $(this).attr("data-original-title");
+                  inner_path = "https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/";
+                  if (colour != "") {
+                    newpath = inner_path + colour + ".png";
+                    $("#bball-centercircle").attr("src", "" + newpath + "");
+                    $("#bball-centercircle").attr("alt", "" + alt_tag + "");
+                  }
+                  } else if (type == "bball-freethrow") {
+                  colour = $(this).attr("data-link");
+                  alt_tag = $(this).attr("data-original-title");
+                  inner_path = "https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/";
+                  if (colour != "") {
+                    newpath = inner_path + colour + ".png";
+                    $("#bball-freethrow").attr("src", "" + newpath + "");
+                    $("#bball-freethrow").attr("alt", "" + alt_tag + "");
+                  }
+                  } else if (type == "bball-lane") {
+                  colour = $(this).attr("data-link");
+                  alt_tag = $(this).attr("data-original-title");
+                  inner_path = "https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/";
+                  if (colour != "") {
+                    newpath = inner_path + colour + ".png";
+                    $("#bball-lane").attr("src", "" + newpath + "");
+                    $("#bball-lane").attr("alt", "" + alt_tag + "");
+                  }
+                  } else if (type == "bball-3point") {
+                  colour = $(this).attr("data-link");
+                  alt_tag = $(this).attr("data-original-title");
+                  inner_path = "https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/";
+                  if (colour != "") {
+                    newpath = inner_path + colour + ".png";
+                    $("#bball-3point").attr("src", "" + newpath + "");
+                    $("#bball-3point").attr("alt", "" + alt_tag + "");
+                  }
+                  } else if (type == "bball-court") {
+                  colour = $(this).attr("data-link");
+                  alt_tag = $(this).attr("data-original-title");
+                  inner_path = "https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/";
+                  if (colour != "") {
+                    newpath = inner_path + colour + ".png";
+                    $("#bball-court").attr("src", "" + newpath + "");
+                    $("#bball-court").attr("alt", "" + alt_tag + "");
+                  }
+                  } else if (type == "bball-oob") {
+                  colour = $(this).attr("data-link");
+                  alt_tag = $(this).attr("data-original-title");
+                  inner_path = "https://hanoisports.com/wp-content/plugins/vts-tennis_pickleball/images/";
+                  if (colour != "") {
+                    newpath = inner_path + colour + ".png";
+                    $("#bball-oob").attr("src", "" + newpath + "");
+                    $("#bball-oob").attr("alt", "" + alt_tag + "");
+                  }
+                  }
+                  });
+
+                  // Thêm tooltip đơn giản
+                  $(".color-bx").each(function() {
+                    updateTooltip(this);
+                  });
+                  });
+                </script>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div id="main-menu" class="mobile-sidebar no-scrollbar mfp-hide">
+      <div class="sidebar-menu no-scrollbar">
+        <ul class="nav nav-sidebar nav-vertical nav-uppercase" data-tab="1">
+          <li class="header-search-form search-form html relative has-icon">
+            <div class="header-search-form-wrapper">
+              <div
+                class="searchform-wrapper ux-search-box relative form-flat is-normal">
+                <form
+                  role="search"
+                  method="get"
+                  class="searchform"
+                  action="https://hanoisports.com/">
+                  <div class="flex-row relative">
+                    <div class="flex-col flex-grow">
+                      <label
+                        class="screen-reader-text"
+                        for="woocommerce-product-search-field-1"
+                        >Tìm kiếm:</label
+                      >
+                      <input
+                        type="search"
+                        id="woocommerce-product-search-field-1"
+                        class="search-field mb-0"
+                        placeholder="Tìm kiếm"
+                        value=""
+                        name="s" />
+                      <input type="hidden" name="post_type" value="product" />
+                    </div>
+                    <div class="flex-col"></div>
+                  </div>
+                  <div class="live-search-results text-left z-top"></div>
+                </form>
+              </div>
+            </div>
+          </li>
+          <li
+            class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home menu-item-147">
+            <a href="https://hanoisports.com/">TRANG CHỦ</a>
+          </li>
+          <li
+            class="menu-item menu-item-type-post_type menu-item-object-page menu-item-815">
+            <a href="https://hanoisports.com/gioi-thieu-ve-hanoisports/"
+              >GIỚI THIỆU</a
+            >
+          </li>
+          <li
+            class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-456">
+            <a href="#">THI CÔNG</a>
+            <ul class="sub-menu nav-sidebar-ul children">
+              <li
+                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-1762">
+                <a href="https://hanoisports.com/san-soi-polymer/"
+                  >Sàn Polymer Sỏi Rửa</a
+                >
+                <ul class="sub-menu nav-sidebar-ul">
+                  <li
+                    class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1936">
+                    <a
+                      href="https://hanoisports.com/san-soi-polymer/tuy-chon-mau-soi-cao-cap/">
+                      Tùy Chọn Màu Sỏi Cao Cấp</a
+                    >
+                  </li>
+                </ul>
+              </li>
+              <li
+                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-148">
+                <a
+                  href="https://hanoisports.com/thi-cong-san-cao-su-epdm-san-choi-tre-em/">
+                  Thi Công Sàn Cao Su Epdm</a
+                >
+              </li>
+              <li
+                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2456">
+                <a
+                  href="https://hanoisports.com/thi-cong-san-choi-tre-em-epdm/">
+                  Thi Công Sân Chơi Trẻ Em</a
+                >
+              </li>
+              <li
+                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-283">
+                <a
+                  href="https://hanoisports.com/thi-cong-duong-chay-dien-kinh-tieu-chuan-iaaf/">
+                  Thi Công Đường Chạy Điền Kinh</a
+                >
+              </li>
+              <li
+                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-457">
+                <a
+                  href="https://hanoisports.com/thi-cong-san-tennis-tron-goi-chuyen-nghiep/">
+                  Thi Công Sân Tennis</a
+                >
+              </li>
+              <li
+                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-689">
+                <a
+                  href="https://hanoisports.com/thi-cong-san-bong-ro-tron-goi-chuyen-nghiep/">
+                  Thi Công Sân Bóng Rổ</a
+                >
+              </li>
+              <li
+                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2677">
+                <a href="https://hanoisports.com/thi-cong-san-pickleball/"
+                  >Sơn sân Pickleball</a
+                >
+              </li>
+              <li
+                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2254">
+                <a
+                  href="https://hanoisports.com/thi-cong-san-bong-chuyen-trong-nha-ngoai-troi/">
+                  Thi Công Sân Bóng Chuyền</a
+                >
+              </li>
+              <li
+                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1736">
+                <a
+                  href="https://hanoisports.com/thi-cong-san-cau-long-trong-nha-ngoai-troi/">
+                  Thi Công Sân Cầu Lông</a
+                >
+              </li>
+              <li
+                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1434">
+                <a href="https://hanoisports.com/thi-cong-lam-san-co-tu-nhien/">
+                  Trồng Cỏ Sân Bóng</a
+                >
+              </li>
+              <li
+                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1553">
+                <a href="https://hanoisports.com/cai-tao-san-the-thao/"
+                  >Cải Tạo Sân Thể Thao</a
+                >
+              </li>
+            </ul>
+          </li>
+          <li
+            class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-3167 current_page_item menu-item-3170">
+            <a
+              href="https://hanoisports.com/phoi-mau-san-pickleball/"
+              aria-current="page"
+              >Phối Màu Sân Pickleball</a
+            >
+          </li>
+          <li
+            class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-1358">
+            <a href="#">SẢN PHẨM</a>
+            <ul class="sub-menu nav-sidebar-ul children">
+              <li
+                class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-1359">
+                <a href="https://hanoisports.com/hat-giong-co/">Hạt Giống Cỏ</a>
+              </li>
+              <li
+                class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-1366">
+                <a href="https://hanoisports.com/vat-lieu-san-the-thao/"
+                  >Vật Liệu Sân Thể Thao</a
+                >
+              </li>
+              <li
+                class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-2319">
+                <a href="https://hanoisports.com/san-epoxy/">Sàn Epoxy</a>
+              </li>
+              <li
+                class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-has-children menu-item-1360">
+                <a href="https://hanoisports.com/san-the-thao/">Sàn Thể Thao</a>
+                <ul class="sub-menu nav-sidebar-ul">
+                  <li
+                    class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-1363">
+                    <a
+                      href="https://hanoisports.com/san-cao-su-epdm-san-choi-tre-em/">
+                      Sàn Cao Su Epdm</a
+                    >
+                  </li>
+                  <li
+                    class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-1364">
+                    <a
+                      href="https://hanoisports.com/be-mat-duong-chay-dien-kinh/">
+                      Đường Chạy Điền Kinh</a
+                    >
+                  </li>
+                  <li
+                    class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-1362">
+                    <a href="https://hanoisports.com/be-mat-san-tennis/"
+                      >Sân Tennis</a
+                    >
+                  </li>
+                  <li
+                    class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-1361">
+                    <a href="https://hanoisports.com/be-mat-san-bong-ro/"
+                      >Sân Bóng Rổ</a
+                    >
+                  </li>
+                  <li
+                    class="menu-item menu-item-type-taxonomy menu-item-object-product_cat menu-item-1365">
+                    <a href="https://hanoisports.com/tham-san-cau-long/"
+                      >Thảm Cầu Lông</a
+                    >
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li
+            class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1003">
+            <a href="https://hanoisports.com/huong-dan-ky-thuat/">TIN TỨC</a>
+          </li>
+          <li
+            class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1568">
+            <a href="https://hanoisports.com/lien-he/">LIÊN HỆ</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- if gom all in one show -->
+    <div id="button-contact-vr" class="">
+      <div id="gom-all-in-one"></div>
+      <!-- end v3 class gom-all-in-one -->
+    </div>
+    <!-- Add custom css and js -->
+    <script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+      if (document.querySelector("#all-in-one-vr")) {
+          document.querySelector("#all-in-one-vr").addEventListener("click", function() {
+              document.querySelector("#button-contact-vr").classList.toggle("active");
+          });
+      }
+
+      jQuery(document).ready(function($) {
+          // $('#all-in-one-vr').click(function() {
+          //     $('#button-contact-vr').toggleClass('active');
+          // })
+          $('#contact-form-vr').click(function() {
+              $('#popup-form-contact-vr').addClass('active');
+          })
+          $('div#popup-form-contact-vr .bg-popup-vr,div#popup-form-contact-vr .content-popup-vr .close-popup-vr').click(function() {
+              $('#popup-form-contact-vr').removeClass('active');
+          })
+          $('#contact-showroom').click(function() {
+              $('#popup-showroom-vr').addClass('active');
+          })
+          $('div#popup-showroom-vr .bg-popup-vr,.content-popup-vr .close-popup-vr').click(function() {
+              $('#popup-showroom-vr').removeClass('active');
+          })
+      });
+    </script>
+    <!-- end Add custom css and js -->
+    <!-- color phone -->
+    <!-- color phone -->
+    <!-- size scale -->
+    <!-- location bottom -->
+    <div id="login-form-popup" class="lightbox-content mfp-hide">
+      <div class="woocommerce">
+        <div class="woocommerce-notices-wrapper"></div>
+        <div class="account-container lightbox-inner">
+          <div class="account-login-inner">
+            <h3 class="uppercase">Đăng nhập</h3>
+            <form
+              class="woocommerce-form woocommerce-form-login login"
+              method="post">
+              <p
+                class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                <label for="username"
+                  >Tên tài khoản hoặc địa chỉ email&nbsp;<span class="required"
+                    >*</span
+                  ></label
+                >
+                <input
+                  type="text"
+                  class="woocommerce-Input woocommerce-Input--text input-text"
+                  name="username"
+                  id="username"
+                  autocomplete="username"
+                  value="" />
+              </p>
+              <p
+                class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                <label for="password"
+                  >Mật khẩu&nbsp;<span class="required">*</span></label
+                >
+                <input
+                  class="woocommerce-Input woocommerce-Input--text input-text"
+                  type="password"
+                  name="password"
+                  id="password"
+                  autocomplete="current-password" />
+              </p>
+              <p class="form-row">
+                <label
+                  class="woocommerce-form__label woocommerce-form__label-for-checkbox woocommerce-form-login__rememberme">
+                  <input
+                    class="woocommerce-form__input woocommerce-form__input-checkbox"
+                    name="rememberme"
+                    type="checkbox"
+                    id="rememberme"
+                    value="forever" />
+                  <span>Ghi nhớ mật khẩu</span></label
+                >
+                <input
+                  type="hidden"
+                  id="woocommerce-login-nonce"
+                  name="woocommerce-login-nonce"
+                  value="82ad525c1d" /><input
+                  type="hidden"
+                  name="_wp_http_referer"
+                  value="/phoi-mau-san-pickleball/" />
+                <button
+                  type="submit"
+                  class="woocommerce-button button woocommerce-form-login__submit"
+                  name="login"
+                  value="Đăng nhập">
+                  Đăng nhập
+                </button>
+              </p>
+              <p class="woocommerce-LostPassword lost_password">
+                <a href="https://hanoisports.com/tai-khoan/lost-password/"
+                  >Quên mật khẩu?</a
+                >
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+      (function () {
+              var c = document.body.className;
+              c = c.replace(/woocommerce-no-js/, 'woocommerce-js');
+              document.body.className = c;
+      })();
+    </script>
+    <link
+      data-minify="1"
+      rel="stylesheet"
+      id="wc-blocks-style-css"
+      href="https://hanoisports.com/wp-content/cache/min/1/wp-content/plugins/woocommerce/assets/client/blocks/wc-blocks.css?ver=1732180877"
+      type="text/css"
+      media="all" />
+    <script
+      type="rocketlazyloadscript"
+      data-minify="1"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/cache/min/1/wp-content/plugins/twenty20/assets/js/jquery.twenty20.js?ver=1732180877"
+      id="twenty20-js"
+      defer></script>
+    <script
+      type="rocketlazyloadscript"
+      data-minify="1"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/cache/min/1/wp-content/plugins/twenty20/assets/js/jquery.event.move.js?ver=1732180877"
+      id="twenty20-eventmove-js"
+      defer></script>
+    <script type="text/javascript" id="woocommerce-js-extra">
+      /* <![CDATA[ */
+      var woocommerce_params = {
+        ajax_url: "\/wp-admin\/admin-ajax.php",
+        wc_ajax_url: "\/?wc-ajax=%%endpoint%%",
+      };
+      /* ]]> */
+    </script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/plugins/woocommerce/assets/js/frontend/woocommerce.min.js?ver=9.5.2"
+      id="woocommerce-js"
+      data-wp-strategy="defer"
+      defer></script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-includes/js/dist/hooks.min.js?ver=4d63a3d491d11ffd8ac6"
+      id="wp-hooks-js"></script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-includes/js/dist/i18n.min.js?ver=5e580eb46a90c2b997e6"
+      id="wp-i18n-js"></script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      id="wp-i18n-js-after">
+
+      /* <![CDATA[ */
+      wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+      /* ]]> */
+    </script>
+    <script
+      type="rocketlazyloadscript"
+      data-minify="1"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/cache/min/1/wp-content/plugins/contact-form-7/includes/swv/js/index.js?ver=1732180878"
+      id="swv-js"
+      defer></script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      id="contact-form-7-js-translations">
+
+      /* <![CDATA[ */
+      ( function( domain, translations ) {
+            var localeData = translations.locale_data[ domain ] || translations.locale_data.messages;
+            localeData[""].domain = domain;
+            wp.i18n.setLocaleData( localeData, domain );
+      } )( "contact-form-7", {"translation-revision-date":"2024-08-11 13:44:17+0000","generator":"GlotPress\/4.0.1","domain":"messages","locale_data":{"messages":{"":{"domain":"messages","plural-forms":"nplurals=1; plural=0;","lang":"vi_VN"},"This contact form is placed in the wrong place.":["Bi\u1ec3u m\u1eabu li\u00ean h\u1ec7 n\u00e0y \u0111\u01b0\u1ee3c \u0111\u1eb7t sai v\u1ecb tr\u00ed."],"Error:":["L\u1ed7i:"]}},"comment":{"reference":"includes\/js\/index.js"}} );
+      /* ]]> */
+    </script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      id="contact-form-7-js-before">
+
+      /* <![CDATA[ */
+      var wpcf7 = {
+        "api": {
+            "root": "https:\/\/hanoisports.com\/wp-json\/",
+            "namespace": "contact-form-7\/v1"
+        },
+        "cached": 1
+      };
+      var wpcf7 = {
+        "api": {
+            "root": "https:\/\/hanoisports.com\/wp-json\/",
+            "namespace": "contact-form-7\/v1"
+        },
+        "cached": 1
+      };
+      /* ]]> */
+    </script>
+    <script
+      type="rocketlazyloadscript"
+      data-minify="1"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/cache/min/1/wp-content/plugins/contact-form-7/includes/js/index.js?ver=1732180878"
+      id="contact-form-7-js"
+      defer></script>
+    <script type="text/javascript" id="wpcf7-redirect-script-js-extra">
+      /* <![CDATA[ */
+      var wpcf7r = {
+        ajax_url: "https:\/\/hanoisports.com\/wp-admin\/admin-ajax.php",
+      };
+      /* ]]> */
+    </script>
+    <script
+      type="rocketlazyloadscript"
+      data-minify="1"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/cache/min/1/wp-content/plugins/wpcf7-redirect/build/js/wpcf7r-fe.js?ver=1732180878"
+      id="wpcf7-redirect-script-js"
+      defer></script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      id="rocket-browser-checker-js-after">
+
+      /* <![CDATA[ */
+      "use strict";var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1,descriptor.configurable=!0,"value"in descriptor&&(descriptor.writable=!0),Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){return protoProps&&defineProperties(Constructor.prototype,protoProps),staticProps&&defineProperties(Constructor,staticProps),Constructor}}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor))throw new TypeError("Cannot call a class as a function")}var RocketBrowserCompatibilityChecker=function(){function RocketBrowserCompatibilityChecker(options){_classCallCheck(this,RocketBrowserCompatibilityChecker),this.passiveSupported=!1,this._checkPassiveOption(this),this.options=!!this.passiveSupported&&options}return _createClass(RocketBrowserCompatibilityChecker,[{key:"_checkPassiveOption",value:function(self){try{var options={get passive(){return!(self.passiveSupported=!0)}};window.addEventListener("test",null,options),window.removeEventListener("test",null,options)}catch(err){self.passiveSupported=!1}}},{key:"initRequestIdleCallback",value:function(){!1 in window&&(window.requestIdleCallback=function(cb){var start=Date.now();return setTimeout(function(){cb({didTimeout:!1,timeRemaining:function(){return Math.max(0,50-(Date.now()-start))}})},1)}),!1 in window&&(window.cancelIdleCallback=function(id){return clearTimeout(id)})}},{key:"isDataSaverModeOn",value:function(){return"connection"in navigator&&!0===navigator.connection.saveData}},{key:"supportsLinkPrefetch",value:function(){var elem=document.createElement("link");return elem.relList&&elem.relList.supports&&elem.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype}},{key:"isSlowConnection",value:function(){return"connection"in navigator&&"effectiveType"in navigator.connection&&("2g"===navigator.connection.effectiveType||"slow-2g"===navigator.connection.effectiveType)}}]),RocketBrowserCompatibilityChecker}();
+      /* ]]> */
+    </script>
+    <script type="text/javascript" id="rocket-preload-links-js-extra">
+      /* <![CDATA[ */
+      var RocketPreloadLinksConfig = {
+        excludeUris:
+          "\/(?:.+\/)?feed(?:\/(?:.+\/?)?)?$|\/(?:.+\/)?embed\/|\/thanh-toan\/??(.*)|\/gio-hang\/?|\/tai-khoan\/??(.*)|\/(index.php\/)?(.*)wp-json(\/.*|$)|\/refer\/|\/go\/|\/recommend\/|\/recommends\/",
+        usesTrailingSlash: "1",
+        imageExt:
+          "jpg|jpeg|gif|png|tiff|bmp|webp|avif|pdf|doc|docx|xls|xlsx|php",
+        fileExt:
+          "jpg|jpeg|gif|png|tiff|bmp|webp|avif|pdf|doc|docx|xls|xlsx|php|html|htm",
+        siteUrl: "https:\/\/hanoisports.com",
+        onHoverDelay: "100",
+        rateThrottle: "3",
+      };
+      /* ]]> */
+    </script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      id="rocket-preload-links-js-after">
+
+      /* <![CDATA[ */
+      (function() {
+      "use strict";var r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},e=function(){function i(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(e,t,n){return t&&i(e.prototype,t),n&&i(e,n),e}}();function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var t=function(){function n(e,t){i(this,n),this.browser=e,this.config=t,this.options=this.browser.options,this.prefetched=new Set,this.eventTime=null,this.threshold=1111,this.numOnHover=0}return e(n,[{key:"init",value:function(){!this.browser.supportsLinkPrefetch()||this.browser.isDataSaverModeOn()||this.browser.isSlowConnection()||(this.regex={excludeUris:RegExp(this.config.excludeUris,"i"),images:RegExp(".("+this.config.imageExt+")$","i"),fileExt:RegExp(".("+this.config.fileExt+")$","i")},this._initListeners(this))}},{key:"_initListeners",value:function(e){-1<this.config.onHoverDelay&&document.addEventListener("mouseover",e.listener.bind(e),e.listenerOptions),document.addEventListener("mousedown",e.listener.bind(e),e.listenerOptions),document.addEventListener("touchstart",e.listener.bind(e),e.listenerOptions)}},{key:"listener",value:function(e){var t=e.target.closest("a"),n=this._prepareUrl(t);if(null!==n)switch(e.type){case"mousedown":case"touchstart":this._addPrefetchLink(n);break;case"mouseover":this._earlyPrefetch(t,n,"mouseout")}}},{key:"_earlyPrefetch",value:function(t,e,n){var i=this,r=setTimeout(function(){if(r=null,0===i.numOnHover)setTimeout(function(){return i.numOnHover=0},1e3);else if(i.numOnHover>i.config.rateThrottle)return;i.numOnHover++,i._addPrefetchLink(e)},this.config.onHoverDelay);t.addEventListener(n,function e(){t.removeEventListener(n,e,{passive:!0}),null!==r&&(clearTimeout(r),r=null)},{passive:!0})}},{key:"_addPrefetchLink",value:function(i){return this.prefetched.add(i.href),new Promise(function(e,t){var n=document.createElement("link");n.rel="prefetch",n.href=i.href,n.onload=e,n.onerror=t,document.head.appendChild(n)}).catch(function(){})}},{key:"_prepareUrl",value:function(e){if(null===e||"object"!==(void 0===e?"undefined":r(e))||!1 in e||-1===["http:","https:"].indexOf(e.protocol))return null;var t=e.href.substring(0,this.config.siteUrl.length),n=this._getPathname(e.href,t),i={original:e.href,protocol:e.protocol,origin:t,pathname:n,href:t+n};return this._isLinkOk(i)?i:null}},{key:"_getPathname",value:function(e,t){var n=t?e.substring(this.config.siteUrl.length):e;return n.startsWith("/")||(n="/"+n),this._shouldAddTrailingSlash(n)?n+"/":n}},{key:"_shouldAddTrailingSlash",value:function(e){return this.config.usesTrailingSlash&&!e.endsWith("/")&&!this.regex.fileExt.test(e)}},{key:"_isLinkOk",value:function(e){return null!==e&&"object"===(void 0===e?"undefined":r(e))&&(!this.prefetched.has(e.href)&&e.origin===this.config.siteUrl&&-1===e.href.indexOf("?")&&-1===e.href.indexOf("#")&&!this.regex.excludeUris.test(e.href)&&!this.regex.images.test(e.href))}}],[{key:"run",value:function(){"undefined"!=typeof RocketPreloadLinksConfig&&new n(new RocketBrowserCompatibilityChecker({capture:!0,passive:!0}),RocketPreloadLinksConfig).init()}}]),n}();t.run();
+      }());
+      /* ]]> */
+    </script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-includes/js/hoverIntent.min.js?ver=1.10.2"
+      id="hoverIntent-js"
+      defer></script>
+    <script type="text/javascript" id="flatsome-js-js-extra">
+      /* <![CDATA[ */
+      var flatsomeVars = {
+        theme: { version: "3.19.4" },
+        ajaxurl: "https:\/\/hanoisports.com\/wp-admin\/admin-ajax.php",
+        rtl: "",
+        sticky_height: "70",
+        stickyHeaderHeight: "0",
+        scrollPaddingTop: "0",
+        assets_url:
+          "https:\/\/hanoisports.com\/wp-content\/themes\/flatsome\/assets\/",
+        lightbox: {
+          close_markup:
+            '<button title="%title%" type="button" class="mfp-close"><svg xmlns="http:\/\/www.w3.org\/2000\/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"><\/line><line x1="6" y1="6" x2="18" y2="18"><\/line><\/svg><\/button>',
+          close_btn_inside: false,
+        },
+        user: { can_edit_pages: false },
+        i18n: {
+          mainMenu: "Menu ch\u00ednh",
+          toggleButton: "Chuy\u1ec3n \u0111\u1ed5i",
+        },
+        options: {
+          cookie_notice_version: "1",
+          swatches_layout: false,
+          swatches_disable_deselect: false,
+          swatches_box_select_event: false,
+          swatches_box_behavior_selected: false,
+          swatches_box_update_urls: "1",
+          swatches_box_reset: false,
+          swatches_box_reset_limited: false,
+          swatches_box_reset_extent: false,
+          swatches_box_reset_time: 300,
+          search_result_latency: "0",
+        },
+        is_mini_cart_reveal: "1",
+      };
+      /* ]]> */
+    </script>
+    <script
+      type="rocketlazyloadscript"
+      data-minify="1"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/cache/min/1/wp-content/themes/flatsome/assets/js/flatsome.js?ver=1732180878"
+      id="flatsome-js-js"
+      defer></script>
+    <script
+      type="rocketlazyloadscript"
+      data-minify="1"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/cache/min/1/wp-content/themes/flatsome/inc/integrations/wp-rocket/flatsome-wp-rocket.js?ver=1732180878"
+      id="flatsome-wp-rocket-js"
+      defer></script>
+    <script
+      type="rocketlazyloadscript"
+      data-minify="1"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/cache/min/1/wp-content/themes/flatsome/inc/extensions/flatsome-live-search/flatsome-live-search.js?ver=1732180878"
+      id="flatsome-live-search-js"
+      defer></script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/plugins/woocommerce/assets/js/sourcebuster/sourcebuster.min.js?ver=9.5.2"
+      id="sourcebuster-js-js"
+      defer></script>
+    <script type="text/javascript" id="wc-order-attribution-js-extra">
+      /* <![CDATA[ */
+      var wc_order_attribution = {
+        params: {
+          lifetime: 1.0e-5,
+          session: 30,
+          base64: false,
+          ajaxurl: "https:\/\/hanoisports.com\/wp-admin\/admin-ajax.php",
+          prefix: "wc_order_attribution_",
+          allowTracking: true,
+        },
+        fields: {
+          source_type: "current.typ",
+          referrer: "current_add.rf",
+          utm_campaign: "current.cmp",
+          utm_source: "current.src",
+          utm_medium: "current.mdm",
+          utm_content: "current.cnt",
+          utm_id: "current.id",
+          utm_term: "current.trm",
+          utm_source_platform: "current.plt",
+          utm_creative_format: "current.fmt",
+          utm_marketing_tactic: "current.tct",
+          session_entry: "current_add.ep",
+          session_start_time: "current_add.fd",
+          session_pages: "session.pgs",
+          session_count: "udata.vst",
+          user_agent: "udata.uag",
+        },
+      };
+      /* ]]> */
+    </script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/plugins/woocommerce/assets/js/frontend/order-attribution.min.js?ver=9.5.2"
+      id="wc-order-attribution-js"
+      defer></script>
+    <script
+      type="rocketlazyloadscript"
+      data-minify="1"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/cache/min/1/wp-content/themes/flatsome/assets/js/extensions/flatsome-swatches-frontend.js?ver=1732180878"
+      id="flatsome-swatches-frontend-js"
+      defer></script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-includes/js/jquery/ui/core.min.js?ver=1.13.3"
+      id="jquery-ui-core-js"
+      defer></script>
+    <script type="text/javascript" id="popup-maker-site-js-extra">
+      /* <![CDATA[ */
+      var pum_vars = {
+        version: "1.20.3",
+        pm_dir_url:
+          "https:\/\/hanoisports.com\/wp-content\/plugins\/popup-maker\/",
+        ajaxurl: "https:\/\/hanoisports.com\/wp-admin\/admin-ajax.php",
+        restapi: "https:\/\/hanoisports.com\/wp-json\/pum\/v1",
+        rest_nonce: null,
+        default_theme: "895",
+        debug_mode: "",
+        disable_tracking: "",
+        home_url: "\/",
+        message_position: "top",
+        core_sub_forms_enabled: "1",
+        popups: [],
+        cookie_domain: "",
+        analytics_route: "analytics",
+        analytics_api: "https:\/\/hanoisports.com\/wp-json\/pum\/v1",
+      };
+      var pum_sub_vars = {
+        ajaxurl: "https:\/\/hanoisports.com\/wp-admin\/admin-ajax.php",
+        message_position: "top",
+      };
+      var pum_popups = {
+        "pum-904": {
+          triggers: [
+            {
+              type: "auto_open",
+              settings: { cookie_name: "", delay: "15000" },
+            },
+          ],
+          cookies: [],
+          disable_on_mobile: false,
+          disable_on_tablet: false,
+          atc_promotion: null,
+          explain: null,
+          type_section: null,
+          theme_id: "896",
+          size: "custom",
+          responsive_min_width: "0px",
+          responsive_max_width: "100px",
+          custom_width: "250px",
+          custom_height_auto: true,
+          custom_height: "300px",
+          scrollable_content: false,
+          animation_type: "fadeAndSlide",
+          animation_speed: "350",
+          animation_origin: "bottom",
+          open_sound: "beep.mp3",
+          custom_sound: "",
+          location: "right bottom",
+          position_top: "100",
+          position_bottom: "10",
+          position_left: "0",
+          position_right: "10",
+          position_from_trigger: false,
+          position_fixed: true,
+          overlay_disabled: true,
+          stackable: true,
+          disable_reposition: false,
+          zindex: "1999999999",
+          close_button_delay: "0",
+          fi_promotion: null,
+          close_on_form_submission: true,
+          close_on_form_submission_delay: "1000",
+          close_on_overlay_click: true,
+          close_on_esc_press: true,
+          close_on_f4_press: true,
+          disable_form_reopen: false,
+          disable_accessibility: false,
+          theme_slug: "lightbox",
+          id: 904,
+          slug: "popup-lay-sdt-khach-hang",
+        },
+      };
+      /* ]]> */
+    </script>
+    <script
+      type="rocketlazyloadscript"
+      data-minify="1"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/cache/min/1/wp-content/uploads/pum/pum-site-scripts.js?ver=1732180878"
+      id="popup-maker-site-js"
+      defer></script>
+    <script
+      type="rocketlazyloadscript"
+      data-minify="1"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/cache/min/1/wp-content/themes/flatsome/assets/js/woocommerce.js?ver=1732180878"
+      id="flatsome-theme-woocommerce-js-js"
+      defer></script>
+    <script type="text/javascript" id="wc-cart-fragments-js-extra">
+      /* <![CDATA[ */
+      var wc_cart_fragments_params = {
+        ajax_url: "\/wp-admin\/admin-ajax.php",
+        wc_ajax_url: "\/?wc-ajax=%%endpoint%%",
+        cart_hash_key: "wc_cart_hash_f8cf44e9857cb59edcac21ad21fa5ad1",
+        fragment_name: "wc_fragments_f8cf44e9857cb59edcac21ad21fa5ad1",
+        request_timeout: "5000",
+      };
+      /* ]]> */
+    </script>
+    <script
+      type="rocketlazyloadscript"
+      data-rocket-type="text/javascript"
+      data-rocket-src="https://hanoisports.com/wp-content/plugins/woocommerce/assets/js/frontend/cart-fragments.min.js?ver=9.5.2"
+      id="wc-cart-fragments-js"
+      defer="defer"
+      data-wp-strategy="defer"></script>
+    <script>
+      window.lazyLoadOptions = [
+        {
+          elements_selector:
+            "img[data-lazy-src],.rocket-lazyload,iframe[data-lazy-src]",
+          data_src: "lazy-src",
+          data_srcset: "lazy-srcset",
+          data_sizes: "lazy-sizes",
+          class_loading: "lazyloading",
+          class_loaded: "lazyloaded",
+          threshold: 300,
+          callback_loaded: function (element) {
+            if (
+              element.tagName === "IFRAME" &&
+              element.dataset.rocketLazyload == "fitvidscompatible"
+            ) {
+              if (element.classList.contains("lazyloaded")) {
+                if (typeof window.jQuery != "undefined") {
+                  if (jQuery.fn.fitVids) {
+                    jQuery(element).parent().fitVids();
+                  }
+                }
+              }
+            }
+          },
+        },
+        {
+          elements_selector: ".rocket-lazyload",
+          data_src: "lazy-src",
+          data_srcset: "lazy-srcset",
+          data_sizes: "lazy-sizes",
+          class_loading: "lazyloading",
+          class_loaded: "lazyloaded",
+          threshold: 300,
+        },
+      ];
+      window.addEventListener(
+        "LazyLoad::Initialized",
+        function (e) {
+          var lazyLoadInstance = e.detail.instance;
+          if (window.MutationObserver) {
+            var observer = new MutationObserver(function (mutations) {
+              var image_count = 0;
+              var iframe_count = 0;
+              var rocketlazy_count = 0;
+              mutations.forEach(function (mutation) {
+                for (var i = 0; i < mutation.addedNodes.length; i++) {
+                  if (
+                    typeof mutation.addedNodes[i].getElementsByTagName !==
+                    "function"
+                  ) {
+                    continue;
+                  }
+                  if (
+                    typeof mutation.addedNodes[i].getElementsByClassName !==
+                    "function"
+                  ) {
+                    continue;
+                  }
+                  images = mutation.addedNodes[i].getElementsByTagName("img");
+                  is_image = mutation.addedNodes[i].tagName == "IMG";
+                  iframes =
+                    mutation.addedNodes[i].getElementsByTagName("iframe");
+                  is_iframe = mutation.addedNodes[i].tagName == "IFRAME";
+                  rocket_lazy =
+                    mutation.addedNodes[i].getElementsByClassName(
+                      "rocket-lazyload"
+                    );
+                  image_count += images.length;
+                  iframe_count += iframes.length;
+                  rocketlazy_count += rocket_lazy.length;
+                  if (is_image) {
+                    image_count += 1;
+                  }
+                  if (is_iframe) {
+                    iframe_count += 1;
+                  }
+                }
+              });
+              if (image_count > 0 || iframe_count > 0 || rocketlazy_count > 0) {
+                lazyLoadInstance.update();
+              }
+            });
+            var b = document.getElementsByTagName("body")[0];
+            var config = { childList: !0, subtree: !0 };
+            observer.observe(b, config);
+          }
+        },
+        !1
+      );
+    </script>
+    <script
+      data-no-minify="1"
+      async
+      src="https://hanoisports.com/wp-content/plugins/wp-rocket/assets/js/lazyload/17.8.3/lazyload.min.js"></script>
+    <script>
+      function lazyLoadThumb(e, alt) {
+        var t =
+            '<img data-lazy-src="https://i.ytimg.com/vi_webp/ID/hqdefault.webp" alt="" width="480" height="360"><noscript><img src="https://i.ytimg.com/vi_webp/ID/hqdefault.webp" alt="" width="480" height="360"></noscript>',
+          a = '<button class="play" aria-label="play Youtube video"></button>';
+        t = t.replace('alt=""', 'alt="' + alt + '"');
+        return t.replace("ID", e) + a;
+      }
+      function lazyLoadYoutubeIframe() {
+        var e = document.createElement("iframe"),
+          t = "ID?autoplay=1";
+        t +=
+          0 === this.parentNode.dataset.query.length
+            ? ""
+            : "&" + this.parentNode.dataset.query;
+        e.setAttribute("src", t.replace("ID", this.parentNode.dataset.src)),
+          e.setAttribute("frameborder", "0"),
+          e.setAttribute("allowfullscreen", "1"),
+          e.setAttribute(
+            "allow",
+            "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          ),
+          this.parentNode.parentNode.replaceChild(e, this.parentNode);
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+        var e,
+          t,
+          p,
+          a = document.getElementsByClassName("rll-youtube-player");
+        for (t = 0; t < a.length; t++)
+          (e = document.createElement("div")),
+            e.setAttribute("data-id", a[t].dataset.id),
+            e.setAttribute("data-query", a[t].dataset.query),
+            e.setAttribute("data-src", a[t].dataset.src),
+            (e.innerHTML = lazyLoadThumb(a[t].dataset.id, a[t].dataset.alt)),
+            a[t].appendChild(e),
+            (p = e.querySelector(".play")),
+            (p.onclick = lazyLoadYoutubeIframe);
+      });
+    </script>
+    <!--
+Performance optimized by Redis Object Cache. Learn more: https://wprediscache.com
+
+Retrieved 6083 objects (1 MB) from Redis using PhpRedis (v5.3.7).
+-->
+    <!-- This website is like a Rocket, isn't it? Performance optimized by WP Rocket. Learn more: https://wp-rocket.me - Debug: cached@1741082279 -->
+  </body>
+</html>
